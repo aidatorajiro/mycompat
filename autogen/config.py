@@ -30,9 +30,9 @@ mod_excludes = [
 # Please write every large mod that is NOT used in the current playset.
 mod_excludes += [
     '2417206619', # Wandering Witch
-    '2529002857', # production revolution
-    '2830366252', # production revolution patch
-    '2466607238' # Kasako framework
+    '2529002857', # production revolution SHOULD BE DISABLED in order to avoid conflict
+    '2830366252', # production revolution patch SHOULD BE DISABLED in order to avoid conflict
+    '2466607238' # Kasako framework SHOULD BE DISABLED in order to avoid conflict
 ] # TODO: load irony/stellaris launcher database to obtain excludes
 
 # mod_order is the dictionary of pairs of job name and mod id, suggesting which job definition associating with the mod is used in case of the job definition conflict.
