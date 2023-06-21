@@ -345,7 +345,7 @@ def all_jobs():
             # if capped by modifier, change condition to disable it
             # TODO: implement another logic to make use of it (for example, calculate from workshop residue value)
             if get_field(spl, b'is_capped_by_modifier') == b'no':
-                add_to_field(seg[2], [b'possible', b'planet'], [b'PR_trgr_plnt_REG', b'=', b'no'])
+                add_to_field(seg[2], [b'possible', b'planet'], [b'MYCOMPAT_ENABLED', b'=', b'no'])
                 print('Overwriting a job that is not capped by modifier ... %s' % jn.decode())
                 job_output += export_fields(seg)
                 continue
@@ -440,9 +440,9 @@ def all_jobs():
             mycompat_jobs.append(jn)
 
             deposit_params = [
-                b'icon', b'=', b'PR_D_icon_MOD',
+                b'icon', b'=', b'MYCOMPAT_icon',
                 b'is_for_colonizable', b'=', b'yes',
-                b'category', b'=', b'PR_D_cat_JOB',
+                b'category', b'=', b'MYCOMPAT_cat_job',
                 b'should_swap_deposit_on_terraforming', b'=', b'no',
                 b'drop_weight', b'=', [ b'weight', b'=', b'0' ],
                 b'triggered_planet_modifier', b'=', [
