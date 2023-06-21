@@ -7,7 +7,7 @@ MYCOMPAT_jd_miner = {
         weight = 0
     }
     triggered_planet_modifier = {
-        mult = MYCOMPAT_job_count_miner
+        mult = planet.MYCOMPAT_job_count_miner
         job_miner_add = -1
         MYCOMPAT_job_availability_add = 1
     }
