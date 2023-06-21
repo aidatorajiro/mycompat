@@ -350,7 +350,7 @@ def all_jobs():
                 job_output += export_fields(seg)
                 continue
             
-            agjob_params = [] # aggregated job params
+            proxyjob_params = [] # proxy job params
 
             danger = 0 # error value for job
             
@@ -381,7 +381,7 @@ def all_jobs():
                                 case x:
                                     print('unsupported resource type %s' % x)
                                     danger += 100000000
-                        agjob_params += [prop_name, b'=', prop_value]
+                        proxyjob_params += [prop_name, b'=', prop_value]
                     case b'pop_modifier' | b'planet_modifier' | b'country_modifier' | b'triggered_pop_modifier' | b'triggered_planet_modifier' | b'triggered_country_modifier':
                         mult = None
                         potential = None
@@ -421,7 +421,7 @@ def all_jobs():
                         
                         if send:
                             send_field_id = b'triggered_' + prop_name if not prop_name.startswith(b'triggered_') else prop_name
-                            agjob_params += [
+                            proxyjob_params += [
                                 send_field_id,
                                 b'=',
                                 [   b'mult',
@@ -507,7 +507,7 @@ def all_jobs():
         sv_output += export_fields([
             svid, b'=', [
                 b'base', b'=', b'1',
-                b'mult', b'=', b'MYCOMPAT_job_factor_$JOB$', #PR_FACTOR_plnt_JOB_
+                b'mult', b'=', b'value:MYCOMPAT_job_quantity|JOB|$JOB$|', #PR_FACTOR_plnt_JOB_
                 b'mult', b'=', mult
             ]
         ]) + b'\n'
