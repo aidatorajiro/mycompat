@@ -278,15 +278,18 @@ def all_jobs():
     job_to_modid = {}
     job_def_table = {}
 
-    for modid in os.listdir(stellaris_path):
-        if os.path.isdir(os.path.join(stellaris_path, modid)):
+    for modid in ['v'] + os.listdir(stellaris_path):
+        if modid == 'v' or os.path.isdir(os.path.join(stellaris_path, modid)):
             print('processing modid ', modid)
 
             if modid in mod_excludes:
                 print(" .... skipping this mod")
                 continue
 
-            all_segments = split3(get_segments_from_category(stellaris_path, modid, "common/pop_jobs", simple=False))
+            if modid == 'v':
+                all_segments = split3(get_segments_from_category(stellaris_game_path, '.', "common/pop_jobs", simple=False))
+            else:
+                all_segments = split3(get_segments_from_category(stellaris_path, modid, "common/pop_jobs", simple=False))
 
             job_defs = list(filter(lambda x: isinstance(x[2], list), all_segments))
 
@@ -323,14 +326,21 @@ def all_jobs():
 
             job_modids = job_to_modid[jn]
             if len(job_modids) > 1:
-                if not jn in mod_order:
-                    print("Conflict detected! \n please update mod_order in config.py! \n [[[Original dict]]] \n %s \n Please choose ONE modid (as a string) from each entry in the given dict, and overwrite the entry value with the modid." % dict(filter(lambda x: len(x[1])>1, job_to_modid.items())))
-                    sys.exit()
-                if modid != mod_order[jn]:
-                    print("job overwrite detected. Discarding this one.", jn, modid)
-                    continue
+                if 'v' in job_modids and len(job_modids) == 2:
+                    if modid == 'v':
+                        print("job overwrite detected. Discarding this one.", jn, modid)
+                        continue
+                    else:
+                        print("job overwrite detected. Using this one.", jn, modid)
                 else:
-                    print("job overwrite detected. Using this one.", jn, modid)
+                    if not jn in mod_order:
+                        print("Conflict detected! \n please update mod_order in config.py! \n [[[Original dict]]] \n %s \n Please choose ONE modid (as a string) from each entry in the given dict, and overwrite the entry value with the modid." % dict(filter(lambda x: len(x[1])>1, job_to_modid.items())))
+                        sys.exit()
+                    if modid != mod_order[jn]:
+                        print("job overwrite detected. Discarding this one.", jn, modid)
+                        continue
+                    else:
+                        print("job overwrite detected. Using this one.", jn, modid)
 
             # if capped by modifier, change condition to disable it
             # TODO: implement another logic to make use of it (for example, calculate from workshop residue value)
