@@ -373,7 +373,7 @@ def all_jobs():
                                         x[2][x[2].index(b'multiplier') + 2] = b'value:%s|JOB|%s|' % (get_mod_multid(val), jn)
                                         danger += 1 # be cautious as there's a possibility that the script value won't work
                                     else:
-                                        x[2].insert(0, b'value:MYCOMPAT_job_count|JOB|%s|' % jn)
+                                        x[2].insert(0, b'value:MYCOMPAT_job_quantity|JOB|%s|' % jn)
                                         x[2].insert(0, b'=')
                                         x[2].insert(0, b'multiplier')
                                 case b'category':
@@ -426,7 +426,7 @@ def all_jobs():
                                 b'=',
                                 [   b'mult',
                                     b'=',
-                                    b'value:MYCOMPAT_job_count|JOB|%s|' % jn
+                                    b'value:MYCOMPAT_job_quantity|JOB|%s|' % jn
                                         if not mult else b'value:%s|JOB|%s|' % (get_mod_multid(mult), jn)
                                 ] + ([
                                     b'potential',
@@ -446,7 +446,7 @@ def all_jobs():
                 b'should_swap_deposit_on_terraforming', b'=', b'no',
                 b'drop_weight', b'=', [ b'weight', b'=', b'0' ],
                 b'triggered_planet_modifier', b'=', [
-                    b'mult', b'=', b'value:MYCOMPAT_job_count|JOB|%s|' % jn,
+                    b'mult', b'=', b'MYCOMPAT_job_count_%s' % jn,
                     b'job_%s_add' % jn, b'=', b'-1',
                     b'MYCOMPAT_job_availability_add', b'=', b'1',
                 ]
@@ -503,7 +503,8 @@ def all_jobs():
     for (svid, mult) in all_mod_multid_rev.items():
         sv_output += export_fields([
             svid, b'=', [
-                b'base', b'=', b'1', b'mult', b'=', b'MYCOMPAT_job_factor_$JOB$', #PR_FACTOR_plnt_JOB_
+                b'base', b'=', b'1',
+                b'mult', b'=', b'MYCOMPAT_job_factor_$JOB$', #PR_FACTOR_plnt_JOB_
                 b'mult', b'=', mult
             ]
         ]) + b'\n'
