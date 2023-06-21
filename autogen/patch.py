@@ -27,20 +27,21 @@ def get_scripts_from_category(game_path, modid, cat, with_modid=False):
 
 def get_segments_from_category(game_path, modid, cat, simple=False):
     """
-    get all txt files under game_path/modid/cat/*.txt and parse them. (glob wildcard accepted)
+    get all txt files under `game_path/modid/cat/*.txt` and parse them. (glob wildcard accepted)
 
-    Set simple=True to switch to simple mode.
+    Set `simple=True` to switch to simple mode.\n
     complex mode is default.
 
-    simple mode ... each segments in top-level must be in format 'segment_name = { ... }', not 'segment_name = segment_value'.
-        otherwise the latter one will be regarded as a comment!
-        useful in top-level file parsing.
-        keeps comments and other rubbish data except at end of a file.
-        thus, each segment ends with }
-        but the beginning of each segment may be whitespace, tab, newline or '#'.
-    complex mode ... parse each item as a nested list structure. support statements like 'a = b' in top-level
-        dispose all comments
-        each item will be parsed as a list which consists of a property name bytes, b'=', a property value bytes, or another list (which means another level of data within { ... })
+    simple mode ... each segments in top-level must be in format `segment_name = { ... }`, not `segment_name = segment_value`.\n
+        otherwise the latter one will be regarded as a comment!\n
+        useful in top-level file parsing.\n
+        keeps comments and other rubbish data except at end of a file.\n
+        thus, each segment ends with `}`\n
+        but the beginning of each segment may be whitespace, tab, newline or `#`.\n
+    
+    complex mode ... parse each item as a nested list structure. support statements like `a = b` in top-level\n
+        dispose all comments\n
+        each item will be parsed as a list which consists of a property name bytes, `b'='` or other equal-like statement such as `b'>='`, a property value bytes, or another list (which means another level of data within `{ ... }`)
     """
     if simple:
         f = get_segments_simple
@@ -51,6 +52,7 @@ def get_segments_from_category(game_path, modid, cat, simple=False):
 def get_scripts(game_path, modid, query):
     return list(glob.glob(os.path.join(game_path, modid, query)))
 
+# TODO: implement inline script
 def process_inline(spl):
     inlines = list(filter(lambda x: x[0] == b'inline_script', spl))
     if len(inlines) > 0:
@@ -113,8 +115,8 @@ def is_eq_like(c):
 
 def split3(target):
     """
-    Splits target into a list of length-3 lists.
-    Asserts that `len(target) % 3 == 0` and the middle element of each list is `b'='`
+    Splits target into a list of length-3 lists.\n
+    Asserts that `len(target) % 3 == 0` and the middle element of each list is '=' or ''!=' or '>=' and so on.\n
     Useful for additional parsing after finishing complex mode parsing
     """
     assert len(target) % 3 == 0
@@ -591,6 +593,7 @@ def all_jobs():
         for p in sorted(all_modifiers):
             f.write(p + b'\n')
     
+    """
     pr_segments = split3(get_segments_from_category(stellaris_path, pr_modid, "common/pop_jobs", simple=False))
     pr_core_job = next(filter(lambda x: x[0] == b'PR_job_CORE_regular', pr_segments))
     # TODO: also implement pomod (pop modifier)! calculating ratio of the job to the entire workshop might help.
@@ -609,6 +612,7 @@ def all_jobs():
             modname_orig, b'=', b'1'
         ]]
     job_output += export_fields(pr_core_job)
+    """
 
     with open(patchpath("common/pop_jobs/%sall_jobs_patch.txt" % file_prefix), 'wb') as f:
         f.write(job_output)
