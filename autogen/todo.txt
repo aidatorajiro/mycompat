@@ -3,4 +3,4 @@ MYCOMPAT_job_availability_add
 MYCOMPAT_is_enabled
 MYCOMPAT_icon
 MYCOMPAT_cat_job
-MYCOMPAT_job_efficiency
+MYCOMPAT_job_count

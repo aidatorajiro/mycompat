@@ -1,0 +1,19 @@
+MYCOMPAT_intro = {
+    icon = MYCOMPAT_icon
+    is_for_colonizable = yes
+    category = MYCOMPAT_cat_deposit
+    should_swap_deposit_on_terraforming = no
+    drop_weight = {
+        weight = 0
+    }
+    triggered_planet_modifier = {
+        mult = value:MYCOMPAT_job_count|JOB|miner|
+        job_miner_add = -1
+        MYCOMPAT_job_availability_add = 1
+    }
+    triggered_planet_modifier = {
+        mult = value:MYCOMPAT_deposit_count|DEPOSIT|MYCOMPAT_intro|
+        job_miner_add = -1
+        MYCOMPAT_job_availability_add = 1
+    }
+}
