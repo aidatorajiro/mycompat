@@ -1,0 +1,3 @@
+MYCOMPAT_totalpop
+MYCOMPAT_mult_by_job_count
+MYCOMPAT_job_availability_add

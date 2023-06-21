@@ -56,6 +56,7 @@ def get_scripts(game_path, modid, query):
 def process_inline(spl):
     inlines = list(filter(lambda x: x[0] == b'inline_script', spl))
     if len(inlines) > 0:
+        print("WARNING!!!! unprocessed inline script!!!!!!!")
         return list(filter(lambda x: x[0] != b'inline_script', spl))
     else:
         return spl
@@ -155,13 +156,13 @@ def num_pops_patch(segment):
     def repfunc(m):
         match m.group(1):
             case b'>=':
-                r = b"PR_prmt_trgr_plnt_HC = { MORE = %s }" % str(int(m.group(2)) - 1).encode()
+                r = b"MYCOMPAT_totalpop = { MORE = %s }" % str(int(m.group(2)) - 1).encode()
             case b'<=':
-                r = b"PR_prmt_trgr_plnt_HC = { LESS = %s }" % str(int(m.group(2)) + 1).encode()
+                r = b"MYCOMPAT_totalpop = { LESS = %s }" % str(int(m.group(2)) + 1).encode()
             case b'>':
-                r = b"PR_prmt_trgr_plnt_HC = { MORE = %s }" % str(int(m.group(2))).encode()
+                r = b"MYCOMPAT_totalpop = { MORE = %s }" % str(int(m.group(2))).encode()
             case b'<':
-                r = b"PR_prmt_trgr_plnt_HC = { LESS = %s }" % str(int(m.group(2))).encode()
+                r = b"MYCOMPAT_totalpop = { LESS = %s }" % str(int(m.group(2))).encode()
         return r
     if b"num_pops" in segment:
         replaced = re.sub(rb"num_pops\s*(>=|<=|>|<)\s*(\d+)", repfunc, segment)
@@ -260,94 +261,10 @@ def aot():
             if result:
                 f.write(result + b"\n")
 
-# mr
-"""
-this part of code is broken ;(
-
-def mr():
-    ss = get_segments_from_category(stellaris_path, mr_modid, "common/scripted_triggers", simple=True)
-
-    regularcode = list(filter(lambda x: re.match(rb'^\s*is_regular_empire\s*=\s*{', x), ss))[0]
-
-    regularcode = regularcode.replace(b"is_country_type = default", b"is_country_type = default\n\t\tis_country_type = original_empire_active", 1)
-
-    with open(patchpath("common/scripted_triggers/%smr_patch.txt" % file_prefix), "wb") as f:
-        f.write(regularcode)
-"""
-
-
 def all_jobs():
     """
     ALL JOBS PATCH!
     """
-
-    """
-    =============================================
-     Figure out PRPATCH & PR registration status
-    =============================================
-    deposits PR_D_JOB_<job name>
-    scripted_effects PR_eft_plnt_JOB_deposit_<mod abb name>
-    """
-
-    exist_d = set() # We'll use deposit as canonical job registration
-    exist_e = set()
-
-    job_to_modabb = {}
-
-    prpatch_d = split3(get_segments_from_category(stellaris_path, prpatch_modid, "common/deposits", simple=False))
-    prpatch_d += split3(get_segments_from_category(stellaris_path, pr_modid, "common/deposits", simple=False))
-
-    for seg in prpatch_d:
-        m = re.match(rb'PR_D_JOB_(.+)', seg[0])
-        if m:
-            jobname = m[1]
-            exist_d.add(jobname)
-        else:
-            print('unsupported deposit name', seg[0])
-
-    prpatch_e = split3(get_segments_from_category(stellaris_path, prpatch_modid, "common/scripted_effects", simple=False))
-    prpatch_e += split3(get_segments_from_category(stellaris_path, pr_modid, "common/scripted_effects", simple=False))
-
-    for seg in prpatch_e:
-        m = re.match(rb'PR_eft_plnt_JOB_deposit_(.+)', seg[0])
-        if m:
-            abb = m[1]
-            ifblock = get_field_after(seg[2], rb'if')
-            if ifblock == None:
-                ifblock = seg[2][1:] # for vanilla one, "if" block does not exist
-                # raise NotImplementedError('PR effect lookup failed', m[0])
-            ifblock = split3(ifblock)
-            for x in ifblock:
-                if x[0] == rb'PR_prmt_eft_plnt_JOB_deposit_DB':
-                    jobname = get_field(split3(x[2]), rb'JOB')
-                    if jobname == None:
-                        raise NotImplementedError('PR effect jobname lookup failed', m[0])
-                    exist_e.add(jobname)
-                    job_to_modabb[jobname] = abb
-        else:
-            print('unsupported scripted effect', seg[0])
-
-    print('deposit - effect = ', exist_d - exist_e)
-
-    print('effect - deposit = ', exist_e - exist_d)
-
-    """
-    ===========================
-     Figure out Job Categories
-    ===========================
-    """
-
-    prpatch_m = split3(get_segments_from_category(stellaris_path, prpatch_modid, "common/scripted_modifiers", simple=False))
-    prpatch_m += split3(get_segments_from_category(stellaris_path, pr_modid, "common/scripted_modifiers", simple=False))
-
-    exist_smod_cat_keys = set()
-
-    for seg in prpatch_m:
-        m = re.match(rb'PR_smod_plnt_CAT_(.+)_add', seg[0])
-        if m:
-            exist_smod_cat_keys.add(m[0])
-        else:
-            print('unsupported scripted modifier', seg[0])
 
     """
     ========================
@@ -384,16 +301,14 @@ def all_jobs():
     job_overwrites = list(filter(lambda x: len(x[1]) > 1, job_to_modid.items()))
     print('%s job overwrites. ' % len(job_overwrites))
 
-    job_props = set()
-    all_modifiers = set()
-    danger_map = {}
-    mycompat_jobs = []
-    all_smod_cat_keys = set()
-    all_pomod = set()
-    all_comod = set()
+    job_props = set() # job property name for debugging
+    all_modifiers = set() # all modifiers name for debugging
+    danger_map = {} # danger map for debugging
 
-    all_mod_multid = {}
-    all_mod_multid_rev = {}
+    mycompat_jobs = [] # all additional job definititons
+
+    all_mod_multid = {} # multiplier value to corresponding script values
+    all_mod_multid_rev = {} # reverse lookup of all_mod_multid 
 
     def get_mod_multid(mult):
         if not mult in all_mod_multid:
@@ -418,16 +333,16 @@ def all_jobs():
                     print("job overwrite detected. Using this one.", jn, modid)
 
             # if capped by modifier, change condition to disable it
-            # TODO: implement another logic to make use of it (for example, calculate from workshop value)
+            # TODO: implement another logic to make use of it (for example, calculate from workshop residue value)
             if get_field(spl, b'is_capped_by_modifier') == b'no':
                 add_to_field(seg[2], [b'possible', b'planet'], [b'PR_trgr_plnt_REG', b'=', b'no'])
                 print('Overwriting a job that is not capped by modifier ... %s' % jn.decode())
                 job_output += export_fields(seg)
                 continue
             
-            deposit_params = []
+            agjob_params = [] # aggregated job params
 
-            danger = 0
+            danger = 0 # error value for job
             
             # iterate job properties
             for property in spl:
@@ -439,42 +354,30 @@ def all_jobs():
             
                 # TODO: implement overlord_resources (maybe not that hard)
                 match prop_name:
-                    case b'resources':
+                    case b'overlord_resources' | b'resources':
                         for x in split3(prop_value):
                             match x[0]:
-                                case b'category':
-                                    jobcat = x[2]
                                 case b'produces' | b'upkeep':
                                     if b'multiplier' in x[2]:
                                         val = x[2][x[2].index(b'multiplier') + 2]
-                                        eff = b'general'
-
-                                        # TODO: implement workaround for unsupported things (same as modifier multiplier, use sv)
-                                        if giga_modid in job_to_modid[jn] and val == b'10':
-                                            eff = b'giga_ten'
-                                        elif giga_modid in job_to_modid[jn] and val == b'planet.value:giga_job_scaling_plus_base':
-                                            eff = b'giga_scaling_plus_base'
-                                        else:
-                                            print('unsupported multiplier detected in resources', val, jn, job_to_modid[jn])
-                                            danger += 100
-                                        x[2][x[2].index(b'multiplier') + 2] = b'value:PR_prmt_sv_plnt_JOB_FACTOR|JOB|%s|EFFICIENCY|%s|' % (jn, eff)
+                                        x[2][x[2].index(b'multiplier') + 2] = b'value:%s|JOB|%s|' % (get_mod_multid(val), jn)
+                                        danger += 1 # be cautious as there's a possibility that the script value won't work
                                     else:
-                                        x[2].insert(0, b'value:PR_prmt_sv_plnt_JOB_FACTOR|JOB|%s|EFFICIENCY|general|' % jn)
+                                        x[2].insert(0, b'value:MYCOMPAT_mult_by_job_count|JOB|%s|' % jn)
                                         x[2].insert(0, b'=')
                                         x[2].insert(0, b'multiplier')
                                 case x:
                                     print('unsupported resource type %s', x)
-                                    # TODO: implement fcking INLINE SCRIPTS!!!! (for vanillas only? but all vanila scripts should be patched anyway...)
                                     danger += 100000000
-                                    #raise NotImplementedError('unsupported resource type %s', x)  
-                        deposit_params += [prop_name, b'=', prop_value]
+                        agjob_params += [prop_name, b'=', prop_value]
                     case b'pop_modifier' | b'planet_modifier' | b'country_modifier' | b'triggered_pop_modifier' | b'triggered_planet_modifier' | b'triggered_country_modifier':
-                        mult = None # should be None, otherwise something went wrong
+                        mult = None
                         potential = None
-                        send_planet = [] # modifiers that are sent to "triggered_planet_modifier"
 
                         spl_prop_value = split3(prop_value)
                         modifier_field = get_field(spl_prop_value, b'modifier')
+
+                        send = []
 
                         if modifier_field:
                             spl_prop_value += split3(modifier_field)
@@ -482,77 +385,47 @@ def all_jobs():
                         for mod in spl_prop_value:
                             match mod[0]:
                                 case b'modifier':
+                                    # reluctant to delete modifier field ...
                                     pass
                                 case b'mult' | b'multiplier':
                                     if mult:
                                         print('multiple mult detected in modifiers!!!!', jn, mod[2])
                                         danger += 1000000
-                                    match mod[2]:
-                                        case b'value:scripted_modifier_mult|MODIFIER|pop_job_trade_mult|':
-                                            pass
-                                        case b'value:scripted_modifier_mult|MODIFIER|pop_job_amenities_mult|':
-                                            pass
-                                        case y:
-                                            mult = y
-                                            print('modifier mult detected: ', jn, mult)
-                                            # TODO: implement modifier mult patching more properly (...considering scope difference between pops and triggers)
-                                            danger += 1 # be cautious as there's a possibility that the script value won't work
+                                    mult = mod[2]
+                                    print('modifier mult detected: ', jn, mult)
+                                    # TODO: implement modifier mult patching more properly (...considering scope difference between pops and triggers? but generally it works very very well :))
+                                    danger += 1 # be cautious as there's a possibility that the script value won't work
                                 case b'potential':
                                     if potential:
                                         print('multiple potential detected!! using last one', jn)
                                         danger += 1000000
                                     potential = mod[2]
-                                case b'country_naval_cap_add': # country mod template?
-                                    send_planet += [b'PR_smod_plnt_MOD_naval_cap_add', b'=', mod[2]]
-                                case b'pop_defense_armies_add': # pop mod template?
-                                    send_planet += [b'PR_smod_plnt_MOD_defense_armies_add', b'=', mod[2]]
-                                case b'trade_value_add': # planet mod template?
-                                    send_planet += [b'PR_smod_plnt_MOD_trade_value_add', b'=', mod[2]]
-                                case b'planet_amenities_add' | b'planet_amenities_no_happiness_add': # planet mod template?
-                                    send_planet += [b'PR_smod_plnt_MOD_all_amenities_add', b'=', mod[2]]
                                 case y:
-                                    if prop_name.endswith(b'planet_modifier'):
-                                        send_planet += mod
-                                    elif prop_name.endswith(b'pop_modifier'):
-                                        print('pop modifier detected!!!!!', prop_name, jn, y)
-                                        # TODO: uncommment here after implementing POMOD function
-                                        # send_planet += [b'mycompat_POMOD_' + mod[0], mod[1], mod[2]]
-                                        # all_pomod.add(b'mycompat_POMOD_' + mod[0])
-                                        danger += 10000
-                                    elif prop_name.endswith(b'country_modifier'):
-                                        print('country modifier detected!!!!!', prop_name, jn, y)
-                                        send_planet += [b'mycompat_COMOD_' + mod[0], mod[1], mod[2]]
-                                        all_comod.add(b'mycompat_COMOD_' + mod[0])
+                                    send += mod
                                         
-                            all_modifiers.add(mod[0])
+                            all_modifiers.add(mod[0]) # for debug purpose
                         
                         #####
                         
-                        if send_planet:
-                            deposit_params += [
-                                b'triggered_planet_modifier',
+                        if send:
+                            send_field_id = b'triggered_' + prop_name if not prop_name.startswith(b'triggered_') else prop_name
+                            agjob_params += [
+                                send_field_id,
                                 b'=',
                                 [   b'mult',
                                     b'=',
-                                    b'value:PR_prmt_sv_plnt_JOB_FACTOR|JOB|%s|' % jn
+                                    b'value:MYCOMPAT_mult_by_job_count|JOB|%s|' % jn
                                         if not mult else b'value:%s|JOB|%s|' % (get_mod_multid(mult), jn)
                                 ] + ([
                                     b'potential',
                                     b'=',
                                     potential
-                                ] if potential != None else []) + send_planet]
+                                ] if potential != None else []) + send
+                            ]
             
             danger_map[jn] = danger
 
-            if jn in job_to_modabb:
-                abbkey = job_to_modabb[jn]
-            else:
-                abbkey = b'MYCOMPAT'
-                mycompat_jobs.append(jn)
-            
-            smod_cat_key = b'PR_smod_plnt_CAT_%s_add' % jobcat
-
-            all_smod_cat_keys.add(smod_cat_key)
+            mycompat_jobs.append(jn)
 
             deposit_params = [
                 b'icon', b'=', b'PR_D_icon_MOD',
@@ -560,18 +433,14 @@ def all_jobs():
                 b'category', b'=', b'PR_D_cat_JOB',
                 b'should_swap_deposit_on_terraforming', b'=', b'no',
                 b'drop_weight', b'=', [ b'weight', b'=', b'0' ],
-                b'planet_modifier', b'=', [
-                    b'PR_smod_plnt_JOB_deposit_%s' % abbkey, b'=', b'1'
-                ],
                 b'triggered_planet_modifier', b'=', [
-                    b'mult', b'=', b'value:PR_prmt_sv_plnt_JOB_FACTOR|JOB|%s|' % jn,
+                    b'mult', b'=', b'value:MYCOMPAT_mult_by_job_count|JOB|%s|' % jn,
                     b'job_%s_add' % jn, b'=', b'-1',
-                    b'PR_smod_plnt_VAR_workshop_add', b'=', b'1',
-                    smod_cat_key, b'=', b'1',
+                    b'MYCOMPAT_job_availability_add', b'=', b'1',
                 ]
-            ] + deposit_params
+            ]
 
-            deposit_output += export_fields([b'PR_D_JOB_%s' % jn, b'=', deposit_params])
+            deposit_output += export_fields([b'MYCOMPAT_JD_%s' % jn, b'=', deposit_params])
 
     danger_jobs = list(filter(lambda x: x[1] > 0, danger_map.items()))
 
@@ -592,27 +461,6 @@ def all_jobs():
     with open(patchpath("autogen/all_modifiers.txt"), 'wb') as f:
         for p in sorted(all_modifiers):
             f.write(p + b'\n')
-    
-    """
-    pr_segments = split3(get_segments_from_category(stellaris_path, pr_modid, "common/pop_jobs", simple=False))
-    pr_core_job = next(filter(lambda x: x[0] == b'PR_job_CORE_regular', pr_segments))
-    # TODO: also implement pomod (pop modifier)! calculating ratio of the job to the entire workshop might help.
-    for modname in all_comod:
-        modname_orig = modname.split(b'mycompat_COMOD_')[1]
-        pr_core_job[2] += [b'triggered_country_modifier', b'=', [
-            b'potential', b'=', [
-                b'planet', b'=', [
-                    b'check_modifier_value', b'=', [
-                        b'modifier', b'=', modname,
-                        b'value', b'!=', b'0'
-                    ]
-                ]
-            ],
-            b'mult', b'=', b'planet.modifier:%s' % modname,
-            modname_orig, b'=', b'1'
-        ]]
-    job_output += export_fields(pr_core_job)
-    """
 
     with open(patchpath("common/pop_jobs/%sall_jobs_patch.txt" % file_prefix), 'wb') as f:
         f.write(job_output)
@@ -620,6 +468,7 @@ def all_jobs():
     with open(patchpath("common/deposits/%sall_jobs_patch.txt" % file_prefix), 'wb') as f:
         f.write(deposit_output)
 
+    """
     scripted_effects_data = [
         b'PR_eft_plnt_JOB_deposit_MYCOMPAT', b'=', [
             b'if', b'=', [
@@ -637,11 +486,12 @@ def all_jobs():
     with open(patchpath("common/scripted_modifiers/%sall_jobs_patch.txt" % file_prefix), 'wb') as f:
         for x in (all_smod_cat_keys - exist_smod_cat_keys).union(all_pomod).union(all_comod):
             f.write(b'%s = { icon = mod_PR_smod_plnt_JOB_deposit_V_regular good = yes category = planet}\n' % x)
+    """
 
     for (svid, mult) in all_mod_multid_rev.items():
         sv_output += export_fields([
             svid, b'=', [
-                b'base', b'=', b'1', b'mult', b'=', b'PR_FACTOR_plnt_JOB_$JOB$', 
+                b'base', b'=', b'1', b'mult', b'=', b'MYCOMPAT_job_factor_$JOB$', #PR_FACTOR_plnt_JOB_
                 b'mult', b'=', mult
             ]
         ]) + b'\n'
