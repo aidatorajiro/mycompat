@@ -345,7 +345,7 @@ def all_jobs():
             # if capped by modifier, change condition to disable it
             # TODO: implement another logic to make use of it (for example, calculate from workshop residue value)
             if get_field(spl, b'is_capped_by_modifier') == b'no':
-                add_to_field(seg[2], [b'possible', b'planet'], [b'MYCOMPAT_ENABLED', b'=', b'no'])
+                add_to_field(seg[2], [b'possible', b'planet'], [b'MYCOMPAT_is_enabled', b'=', b'no'])
                 print('Overwriting a job that is not capped by modifier ... %s' % jn.decode())
                 job_output += export_fields(seg)
                 continue

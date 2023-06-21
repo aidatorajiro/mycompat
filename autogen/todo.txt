@@ -1,6 +1,6 @@
 MYCOMPAT_totalpop
-MYCOMPAT_mult_by_job_count
 MYCOMPAT_job_availability_add
-MYCOMPAT_ENABLED
+MYCOMPAT_is_enabled
 MYCOMPAT_icon
 MYCOMPAT_cat_job
+MYCOMPAT_job_efficiency
