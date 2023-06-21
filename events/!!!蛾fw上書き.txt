@@ -31,11 +31,10 @@ country_event = {
 				}
 				PR_eft_plnt_COLONY_INIT = yes		# PR殖民地INIT		前置变量|CD|=季度		内容初始化|flag限定|
 				PR_eft_plnt_MAN_DB = yes			# PR人力异常DB		|CD|=月度
-				PR_eft_plnt_HC_DB = yes			# PR星球总人力DB		|CD|=月度
 				
 				PR_eft_plnt_FUNCTION_DB = yes		# PR星球功能DB		|CD|=半年/可刷新/触发[PR岗位地块DB]
 				PR_eft_plnt_MAN_species_RATIO = yes	# PR星球物种RATIO	|CD|=半年/可刷新
-				PR_EFT_plnt_MAN_rise_RATE = yes		# PR人力增长率DB	|CD|=4月/可刷新
+				PR_EFT_plnt_MAN_rise_RATE = yes		# pr人力增长debug率DB	|CD|=4月/可刷新
 				
 				##	PR岗位地块DB
 				if = { limit = { has_planet_flag = PR_flg_plnt_CAT_JOB_db_READY }	# |PR行业岗位DB准备|	<PR星球功能DB>
@@ -73,8 +72,8 @@ country_event = {
 						PR_eft_plnt_JOB_deposit_WWV = yes		# mod岗位DB_魔女之旅
 						PR_eft_plnt_JOB_deposit_KDC = yes		# mod岗位DB_舰R系	|舰R内置|
 						PR_eft_plnt_JOB_deposit_CG = yes		# mod岗位DB_CG		|多彩革命|
-						PR_eft_plnt_JOB_deposit_MYCOMPAT = yes
 						PR_eft_plnt_JOB_deposit_AL = yes
+						PR_eft_plnt_JOB_deposit_MYCOMPAT = yes
 					}
 				}
 			}
@@ -85,4 +84,3 @@ country_event = {
 		TEST_eft_glbl_PRESSURE_planet = yes
 	}
 }
-
