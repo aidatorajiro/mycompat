@@ -315,7 +315,7 @@ def all_jobs():
 
     def get_mod_multid(mult):
         if not mult in all_mod_multid:
-            all_mod_multid[mult] = b"mycompat_agsv_" + str(len(all_mod_multid)).encode()
+            all_mod_multid[mult] = b"MYCOMPAT_agsv_" + str(len(all_mod_multid)).encode()
             all_mod_multid_rev[all_mod_multid[mult]] = mult
         return all_mod_multid[mult]
 
