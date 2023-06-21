@@ -1,0 +1,26 @@
+mycompat_sofe_thinkers_patch = {
+	icon = d_fertile_lands
+	is_for_colonizable = yes
+	category = cat_mycompat_patch
+	should_swap_deposit_on_terraforming = no
+	drop_weight = { weight = 0 }
+
+	resources = {
+		category = planet_farmers
+		produces = {
+			trigger = {
+				exists = owner
+				owner = {
+					is_progenitor_empires = yes
+				}
+			}
+			multiplier = mycompat_man_subt_workshop
+			food = 250
+			minerals = 250
+			energy = 250
+			consumer_goods = 250
+			unity = 50
+			acot_sr_light_matter = 5
+		}
+	}
+}

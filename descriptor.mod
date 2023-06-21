@@ -1,0 +1,11 @@
+name="MyCompat"
+version="5.0.0"
+tags={
+	"Balance"
+	"Economy"
+	"Military"
+	"Utilities"
+	"Gameplay"
+}
+picture="thumbnail.png"
+supported_version="3.6.*"

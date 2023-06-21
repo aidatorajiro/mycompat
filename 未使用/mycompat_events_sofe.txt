@@ -1,0 +1,64 @@
+namespace = mycompat_events
+
+planet_event = {
+	id = mycompat_events.1
+	hide_window = yes
+	mean_time_to_happen = { days = 30 }
+	trigger = {
+		exists = owner
+		owner = {
+			is_progenitor_empires = yes
+		}
+	}
+	immediate = {
+		if = {
+			limit = {
+				NOT = {
+					has_deposit = mycompat_sofe_thinkers_patch
+				}
+			}
+			add_deposit = mycompat_sofe_thinkers_patch
+		}
+		if = {
+			limit = {
+				is_variable_set = PR_var_plnt_MAN
+				is_variable_set = PR_var_plnt_WORKSHOP
+			}
+			set_variable = {
+				which = mycompat_man_subt_workshop
+				value = PR_var_plnt_MAN
+			}
+			subtract_variable = {
+				which = mycompat_man_subt_workshop
+				value = PR_var_plnt_WORKSHOP
+			}
+			if = {
+				limit = {
+					check_variable = { which = mycompat_man_subt_workshop value < 0 }
+				}
+				set_variable = {
+					which = mycompat_man_subt_workshop
+					value = 0
+				}
+			}
+		}
+	}
+}
+
+planet_event = {
+	id = mycompat_events.2
+	hide_window = yes
+	mean_time_to_happen = { days = 30 }
+	trigger = {
+		OR = {
+			NOT = { exists = owner }
+			owner = {
+				is_progenitor_empires = no
+			}
+		}
+		has_deposit = mycompat_sofe_thinkers_patch
+	}
+	immediate = {
+		remove_deposit = mycompat_sofe_thinkers_patch
+	}
+}

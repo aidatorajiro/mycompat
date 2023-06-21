@@ -1,0 +1,91 @@
+namespace = giga_mega
+
+planet_event = {
+	id = giga_mega.7001
+	hide_window = yes
+	is_triggered_only = yes
+
+	immediate = {
+
+	}
+}
+
+fleet_event = {
+	id = giga_mega.7002
+	hide_window = yes
+	is_triggered_only = yes
+
+	immediate = {
+		
+	}
+}
+
+planet_event = {
+	id = giga_mega.7003
+	hide_window = yes
+	is_triggered_only = yes
+
+	immediate = {
+		
+	}
+}
+
+planet_event = {
+	id = giga_mega.7004
+	hide_window = yes
+	is_triggered_only = yes
+
+	immediate = {
+		
+	}
+}
+
+fleet_event = {
+	id = giga_mega.7005
+	hide_window = yes
+	is_triggered_only = yes
+
+	immediate = {
+		
+	}
+}
+
+planet_event = {
+	id = giga_mega.7006
+	hide_window = yes
+	is_triggered_only = yes
+
+	immediate = {
+		
+	}
+}
+
+planet_event = {
+	id = giga_mega.7008
+	hide_window = yes
+	is_triggered_only = yes
+
+	immediate = {
+		
+	}
+}
+
+planet_event = {
+	id = giga_mega.7009
+	hide_window = yes
+	is_triggered_only = yes
+
+	immediate = {
+		
+	}
+}
+
+country_event = {
+	id = giga_mega.7010
+	hide_window = yes
+	is_triggered_only = yes
+
+	immediate = {
+		
+	}
+}

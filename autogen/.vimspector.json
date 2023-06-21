@@ -1,0 +1,19 @@
+{
+  "configurations": {
+    "patch: Launch": {
+      "adapter": "debugpy",
+      "filetypes": [ "python" ],
+      "configuration": {
+        "name": "patch: Launch",
+        "type": "python",
+        "request": "launch",
+        "cwd": "./",
+        "python": "python3",
+        "stopOnEntry": true,
+        "console": "externalTerminal",
+        "debugOptions": [],
+        "program": "./patch.py"
+      }
+    }
+  }
+}

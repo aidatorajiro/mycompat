@@ -1,0 +1,25 @@
+namespace = mycompat_events
+
+planet_event = {
+	id = mycompat_events.100
+	hide_window = no
+	is_triggered_only = yes
+}
+
+ship_event = {
+	id = mycompat_events.101
+	hide_window = no
+	is_triggered_only = yes
+}
+
+fleet_event = {
+	id = mycompat_events.102
+	hide_window = no
+	is_triggered_only = yes
+}
+
+country_event = {
+	id = mycompat_events.103
+	hide_window = no
+	is_triggered_only = yes
+}

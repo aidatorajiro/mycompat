@@ -1,0 +1,88 @@
+namespace = FW_evt_CORE_plnt
+
+country_event = {
+	id = FW_evt_CORE_plnt.1
+	hide_window = yes
+	is_triggered_only = yes
+	#trigger = { NOT = { has_global_flag = FW_flg_glbl_SCRIPT_shutdown } }
+
+	immediate = {
+		every_galaxy_planet = {
+			limit = {
+				exists = owner
+				is_colony = yes
+				is_under_colonization = no
+			}
+			
+			
+			###_[HOK月度扫星]	##############################
+			if = { limit = { has_planet_flag = FW_flg_plnt_HOK_monthly_READY }	# |HOK月度扫星READY|
+				remove_planet_flag = FW_flg_plnt_HOK_monthly_READY
+				
+				FW_eft_plnt_HOK_pestilence_DB = yes	# HOK月度星球感染DB
+			}
+
+
+			###_[产业革命扫星]	##############################
+			if = {
+				limit = {
+					has_global_flag = PR_installed	# |PR安装|
+					NOT = { has_global_flag = PR_flg_glbl_FEATURE_NON }	#_|调试状态|非
+				}
+				PR_eft_plnt_COLONY_INIT = yes		# PR殖民地INIT		前置变量|CD|=季度		内容初始化|flag限定|
+				PR_eft_plnt_MAN_DB = yes			# PR人力异常DB		|CD|=月度
+				PR_eft_plnt_HC_DB = yes			# PR星球总人力DB		|CD|=月度
+				
+				PR_eft_plnt_FUNCTION_DB = yes		# PR星球功能DB		|CD|=半年/可刷新/触发[PR岗位地块DB]
+				PR_eft_plnt_MAN_species_RATIO = yes	# PR星球物种RATIO	|CD|=半年/可刷新
+				PR_EFT_plnt_MAN_rise_RATE = yes		# PR人力增长率DB	|CD|=4月/可刷新
+				
+				##	PR岗位地块DB
+				if = { limit = { has_planet_flag = PR_flg_plnt_CAT_JOB_db_READY }	# |PR行业岗位DB准备|	<PR星球功能DB>
+				
+					#	|简化模式|
+					if = { limit = { has_global_flag = PR_flg_glbl_MODE_SIMPLE }
+						PR_eft_plnt_JOB_deposit_V_simple = yes	# PR岗位地块DB_V_简化
+					}
+					#	|完全模式|
+					else = {
+						#	vanilla
+						PR_eft_plnt_JOB_basic_FACTOR = yes		# PR人力岗地块FACTOR
+						PR_eft_plnt_JOB_deposit_V_regular = yes	# PR岗位地块DB_V_普通
+						PR_eft_plnt_JOB_deposit_V_gestalt = yes	# PR岗位地块DB_V_格式塔
+						PR_eft_plnt_JOB_deposit_V_FE = yes		# PR岗位地块DB_V_堕落
+						#	mod
+						PR_eft_plnt_JOB_deposit_ACOT = yes		# mod岗位DB_ACOT
+						PR_eft_plnt_JOB_deposit_ADF = yes		# mod岗位DB_灰烬
+						PR_eft_plnt_JOB_deposit_AG = yes		# mod岗位DB_古代帝国
+						PR_eft_plnt_JOB_deposit_AON = yes		# mod岗位DB_皑因世界旅行
+						PR_eft_plnt_JOB_deposit_AOT = yes		# mod岗位DB_AOT
+						PR_eft_plnt_JOB_deposit_GIGA = yes		# mod岗位DB_GIGA
+						PR_eft_plnt_JOB_deposit_NE = yes		# mod岗位DB_涅槃
+						PR_eft_plnt_JOB_deposit_SOFE = yes		# mod岗位DB_SOFE
+						PR_eft_plnt_JOB_deposit_SOTS = yes		# mod岗位DB_acot虚境的秘密
+						PR_eft_plnt_JOB_deposit_SRA = yes		# mod岗位DB_星规阵列
+						PR_eft_plnt_JOB_deposit_SWGS = yes		# mod岗位DB_星舰少女
+						PR_eft_plnt_JOB_deposit_ULT = yes		# mod岗位DB_终极科技
+						PR_eft_plnt_JOB_deposit_NYTO = yes		# mod岗位DB_NYTO
+						PR_eft_plnt_JOB_deposit_DAL = yes		# mod岗位DB_约战
+						PR_eft_plnt_JOB_deposit_ARP = yes		# mod岗位DB_苍蓝
+						PR_eft_plnt_JOB_deposit_AZUR = yes		# mod岗位DB_碧蓝
+						PR_eft_plnt_JOB_deposit_VOY = yes		# mod岗位DB_久远
+						PR_eft_plnt_JOB_deposit_KUAT = yes		# mod岗位DB_夸特
+						PR_eft_plnt_JOB_deposit_WWV = yes		# mod岗位DB_魔女之旅
+						PR_eft_plnt_JOB_deposit_KDC = yes		# mod岗位DB_舰R系	|舰R内置|
+						PR_eft_plnt_JOB_deposit_CG = yes		# mod岗位DB_CG		|多彩革命|
+						PR_eft_plnt_JOB_deposit_MYCOMPAT = yes
+						PR_eft_plnt_JOB_deposit_AL = yes
+					}
+				}
+			}
+		}
+
+
+		###_[TEST压力]	##############################
+		TEST_eft_glbl_PRESSURE_planet = yes
+	}
+}
+

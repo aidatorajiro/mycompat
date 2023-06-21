@@ -1,0 +1,5 @@
+PR_smod_plnt_JOB_deposit_MYCOMPAT = {
+	icon = mod_PR_smod_plnt_JOB_deposit_V_regular
+	good = yes
+	category = planet
+}
