@@ -29,11 +29,38 @@ mod_excludes = [
 
 # Please write every large mod that is NOT used in the current playset.
 mod_excludes += [
-    '2417206619' # Wandering Witch
+    '2417206619', # Wandering Witch
+    '2529002857', # production revolution
+    '2830366252', # production revolution patch
+    '2466607238' # Kasako framework
 ] # TODO: load irony/stellaris launcher database to obtain excludes
 
 # mod_order is the dictionary of pairs of job name and mod id, suggesting which job definition associating with the mod is used in case of the job definition conflict.
 # If there is any mod conflict, the program will give some instruction to edit this field.
-mod_order = {
-
+mod_order =  {
+    b'gpm_archaeologist': '2807759164', 
+    b'gpm_archaeologist_drone': '2807759164', 
+    b'gpm_precursor_archaeologist': '2807759164', 
+    b'gpm_precursor_archaeologist_drone': '2807759164', 
+    b'gpm_orbital_researcher': '2807759164', 
+    b'gpm_orbital_researcher_drone': '2807759164', 
+    b'archaeoengineers': '865040033', 
+    b'criminal': '2785989313', 
+    b'acot_researcher': '2807759164', 
+    b'acot_researcher_drone': '2807759164',
+     b'acot_priest': '2807759164', 
+     b'acot_transmute_drone': '2807759164', 
+     b'acot_voidsphere_labman': '2807759164', 
+     b'acot_voidsphere_labdrone': '2807759164', 
+     b'acot_free_thinker': '2807759164', 
+     b'ae_researcher': '2807759164', 
+     b'ae_researcher_drone': '2807759164', 
+     b'phanon_researcher': '2807759164', 
+     b'phanon_researcher_drone': '2807759164', 
+     b'phanon_priest': '2807759164', 
+     b'stellarite_researcher': '2807759164', 
+     b'stellarite_researcher_drone': '2807759164', 
+     b'stellarite_priest': '2807759164',
+     b'stellarite_bureaucrat': '2807759164', 
+     b'organic_battery': '1311725711'
 }

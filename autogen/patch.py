@@ -366,8 +366,10 @@ def all_jobs():
                                         x[2].insert(0, b'value:MYCOMPAT_mult_by_job_count|JOB|%s|' % jn)
                                         x[2].insert(0, b'=')
                                         x[2].insert(0, b'multiplier')
+                                case b'category':
+                                    pass
                                 case x:
-                                    print('unsupported resource type %s', x)
+                                    print('unsupported resource type %s' % x)
                                     danger += 100000000
                         agjob_params += [prop_name, b'=', prop_value]
                     case b'pop_modifier' | b'planet_modifier' | b'country_modifier' | b'triggered_pop_modifier' | b'triggered_planet_modifier' | b'triggered_country_modifier':
