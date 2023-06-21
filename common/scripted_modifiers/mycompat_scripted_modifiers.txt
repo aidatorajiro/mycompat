@@ -1,4 +1,4 @@
-MYCOMPAT_job_availability_add = {
+MYCOMPAT_converted_jobs_add = {
 	icon = MYCOMPAT_icon_small
 	good = yes
 	category = planet

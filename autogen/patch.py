@@ -448,11 +448,14 @@ def all_jobs():
                 b'triggered_planet_modifier', b'=', [
                     b'mult', b'=', b'planet.MYCOMPAT_job_count_%s' % jn,
                     b'job_%s_add' % jn, b'=', b'-1',
-                    b'MYCOMPAT_job_availability_add', b'=', b'1',
+                    b'MYCOMPAT_converted_jobs_add', b'=', b'1',
+                ],
+                b'planet_modifier', b'=', [
+                    b'job_MYCOMPAT_proxy_%s_add' % jn, b'=', b'1'
                 ]
             ]
 
-            deposit_output += export_fields([b'MYCOMPAT_JD_%s' % jn, b'=', deposit_params])
+            deposit_output += export_fields([b'MYCOMPAT_d_%s' % jn, b'=', deposit_params])
 
     danger_jobs = list(filter(lambda x: x[1] > 0, danger_map.items()))
 

@@ -5,4 +5,4 @@ MYCOMPAT_icon
 MYCOMPAT_cat_job
 MYCOMPAT_job_count : variable : converted job count
 MYCOMPAT_job_quantity : scripted value : converted job count * efficiency
-MYCOMPAT_job_efficiency : scripted value : converted pops aka monpower / sum of converted jobs aka workshop
+MYCOMPAT_job_efficiency : scripted value : converted pops aka monpower / sum of converted jobs aka workshop aka job availiability
