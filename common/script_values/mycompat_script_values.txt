@@ -1,0 +1,11 @@
+MYCOMPAT_job_quantity = {
+
+}
+
+MYCOMPAT_job_count = {
+
+}
+
+MYCOMPAT_job_efficiency = {
+    
+}
