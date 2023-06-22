@@ -450,7 +450,7 @@ def all_jobs():
                 b'triggered_planet_modifier', b'=', [
                     b'mult', b'=', b'planet.MYCOMPAT_job_count_%s' % jn,
                     b'job_%s_add' % jn, b'=', b'-1',
-                    b'MYCOMPAT_converted_jobs_add', b'=', b'1',
+                    # b'MYCOMPAT_sm_converted_jobs_add', b'=', b'1',
                 ],
                 b'planet_modifier', b'=', [
                     b'job_MYCOMPAT_proxy_%s_add' % jn, b'=', b'1'
@@ -487,25 +487,13 @@ def all_jobs():
     with open(patchpath("common/deposits/%sall_jobs_patch.txt" % file_prefix), 'wb') as f:
         f.write(deposit_output)
 
-    """
     scripted_effects_data = [
-        b'PR_eft_plnt_JOB_deposit_MYCOMPAT', b'=', [
-            b'if', b'=', [
-                b'limit', b'=', [ b'OR', b'=', [
-                    b'check_modifier_value', b'=', [ b'modifier', b'=', b'PR_smod_plnt_JOB_deposit_MYCOMPAT', b'value', b'>', b'0' ],
-                    b'exists', b'=', b'owner'
-                ]]
-            ] + list(itertools.chain.from_iterable([b'PR_prmt_eft_plnt_JOB_deposit_DB', b'=', [ b'JOB', b'=', x ]] for x in mycompat_jobs))
-        ]
+        b'MYCOMPAT_agse_planet', b'=', 
+        list(itertools.chain.from_iterable([b'MYCOMPAT_se_process_job', b'=', [ b'JOB', b'=', x ]] for x in mycompat_jobs))
     ]
 
     with open(patchpath("common/scripted_effects/%sall_jobs_patch.txt" % file_prefix), 'wb') as f:
         f.write(export_fields(scripted_effects_data))
-
-    with open(patchpath("common/scripted_modifiers/%sall_jobs_patch.txt" % file_prefix), 'wb') as f:
-        for x in (all_smod_cat_keys - exist_smod_cat_keys).union(all_pomod).union(all_comod):
-            f.write(b'%s = { icon = mod_PR_smod_plnt_JOB_deposit_V_regular good = yes category = planet}\n' % x)
-    """
 
     for (svid, mult) in all_mod_multid_rev.items():
         sv_output += export_fields([

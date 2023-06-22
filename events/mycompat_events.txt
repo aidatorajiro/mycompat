@@ -6,7 +6,7 @@ planet_event = {
 	is_triggered_only = no
 	mean_time_to_happen = { days = 30 }
 	immediate = {
-		
+		MYCOMPAT_agse_planet = yes
 	}
 }
 
