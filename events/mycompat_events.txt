@@ -1,25 +1,35 @@
 namespace = mycompat_events
 
 planet_event = {
-	id = mycompat_events.100
+	id = mycompat_events.1
+	hide_window = yes
+	is_triggered_only = no
+	mean_time_to_happen = { days = 30 }
+	immediate = {
+		
+	}
+}
+
+planet_event = {
+	id = mycompat_events.500
 	hide_window = no
 	is_triggered_only = yes
 }
 
 ship_event = {
-	id = mycompat_events.101
+	id = mycompat_events.501
 	hide_window = no
 	is_triggered_only = yes
 }
 
 fleet_event = {
-	id = mycompat_events.102
+	id = mycompat_events.502
 	hide_window = no
 	is_triggered_only = yes
 }
 
 country_event = {
-	id = mycompat_events.103
+	id = mycompat_events.503
 	hide_window = no
 	is_triggered_only = yes
 }
