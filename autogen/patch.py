@@ -434,6 +434,8 @@ def all_jobs():
                                     potential
                                 ] if potential != None else []) + send
                             ]
+                    case b'building_icon' | b'category' | b'clothes_texture_index' | b'desc' | b'icon':
+                        proxyjob_params += [prop_name, b'=', prop_value]
             
             danger_map[jn] = danger
 
@@ -456,6 +458,8 @@ def all_jobs():
             ]
 
             deposit_output += export_fields([b'MYCOMPAT_d_%s' % jn, b'=', deposit_params])
+
+            job_output += export_fields([b'MYCOMPAT_j_%s' % jn, b'=', proxyjob_params])
 
     danger_jobs = list(filter(lambda x: x[1] > 0, danger_map.items()))
 
