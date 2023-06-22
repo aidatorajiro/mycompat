@@ -5,6 +5,8 @@ clothes_texture_index
 condition_string
 contributes_to_diplo_weight
 country_modifier
+desc
+exempt_from_ai_amenity_prioritization
 icon
 ignores_favorite
 is_capped_by_modifier

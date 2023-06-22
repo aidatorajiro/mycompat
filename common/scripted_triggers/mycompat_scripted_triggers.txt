@@ -1,0 +1,7 @@
+MYCOMPAT_totalpop = {
+
+}
+
+MYCOMPAT_is_enabled = {
+
+}
