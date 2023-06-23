@@ -1,11 +1,11 @@
-MYCOMPAT_job_quantity = {
+MYCOMPAT_sv_job_quantity = {
 
 }
 
-MYCOMPAT_job_count = {
+MYCOMPAT_sv_job_count = {
 
 }
 
-MYCOMPAT_job_efficiency = {
+MYCOMPAT_sv_job_efficiency = {
     
 }

@@ -1,7 +1,10 @@
-MYCOMPAT_totalpop = {
+MYCOMPAT_st_totalpop = {
 
 }
 
-MYCOMPAT_is_enabled = {
-
+MYCOMPAT_st_is_enabled = {
+    check_variable = {
+		which = MYCOMPAT_v_is_enabled
+		value = 1
+	}
 }

@@ -5,6 +5,9 @@ planet_event = {
 	hide_window = yes
 	is_triggered_only = no
 	mean_time_to_happen = { days = 30 }
+	possible = {
+		MYCOMPAT_st_is_enabled = yes
+	}
 	immediate = {
 		MYCOMPAT_agse_planet = yes
 	}

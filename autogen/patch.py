@@ -156,13 +156,13 @@ def num_pops_patch(segment):
     def repfunc(m):
         match m.group(1):
             case b'>=':
-                r = b"MYCOMPAT_totalpop = { MORE = %s }" % str(int(m.group(2)) - 1).encode()
+                r = b"MYCOMPAT_st_totalpop = { MORE = %s }" % str(int(m.group(2)) - 1).encode()
             case b'<=':
-                r = b"MYCOMPAT_totalpop = { LESS = %s }" % str(int(m.group(2)) + 1).encode()
+                r = b"MYCOMPAT_st_totalpop = { LESS = %s }" % str(int(m.group(2)) + 1).encode()
             case b'>':
-                r = b"MYCOMPAT_totalpop = { MORE = %s }" % str(int(m.group(2))).encode()
+                r = b"MYCOMPAT_st_totalpop = { MORE = %s }" % str(int(m.group(2))).encode()
             case b'<':
-                r = b"MYCOMPAT_totalpop = { LESS = %s }" % str(int(m.group(2))).encode()
+                r = b"MYCOMPAT_st_totalpop = { LESS = %s }" % str(int(m.group(2))).encode()
         return r
     if b"num_pops" in segment:
         replaced = re.sub(rb"num_pops\s*(>=|<=|>|<)\s*(\d+)", repfunc, segment)
@@ -345,7 +345,7 @@ def all_jobs():
             # if capped by modifier, change condition to disable it
             # TODO: implement another logic to make use of it (for example, calculate from workshop residue value)
             if get_field(spl, b'is_capped_by_modifier') == b'no':
-                add_to_field(seg[2], [b'possible', b'planet'], [b'MYCOMPAT_is_enabled', b'=', b'no'])
+                add_to_field(seg[2], [b'possible', b'planet'], [b'MYCOMPAT_st_is_enabled', b'=', b'no'])
                 print('Overwriting a job that is not capped by modifier ... %s' % jn.decode())
                 job_output += export_fields(seg)
                 continue
@@ -373,7 +373,7 @@ def all_jobs():
                                         x[2][x[2].index(b'multiplier') + 2] = b'value:%s|JOB|%s|' % (get_mod_multid(val), jn)
                                         danger += 1 # be cautious as there's a possibility that the script value won't work
                                     else:
-                                        x[2].insert(0, b'value:MYCOMPAT_job_quantity|JOB|%s|' % jn)
+                                        x[2].insert(0, b'value:MYCOMPAT_sv_job_quantity|JOB|%s|' % jn)
                                         x[2].insert(0, b'=')
                                         x[2].insert(0, b'multiplier')
                                 case b'category':
@@ -426,7 +426,7 @@ def all_jobs():
                                 b'=',
                                 [   b'mult',
                                     b'=',
-                                    b'value:MYCOMPAT_job_quantity|JOB|%s|' % jn
+                                    b'value:MYCOMPAT_sv_job_quantity|JOB|%s|' % jn
                                         if not mult else b'value:%s|JOB|%s|' % (get_mod_multid(mult), jn)
                                 ] + ([
                                     b'potential',
@@ -448,7 +448,7 @@ def all_jobs():
                 b'should_swap_deposit_on_terraforming', b'=', b'no',
                 b'drop_weight', b'=', [ b'weight', b'=', b'0' ],
                 b'triggered_planet_modifier', b'=', [
-                    b'mult', b'=', b'value:MYCOMPAT_job_count|JOB|%s|' % jn,
+                    b'mult', b'=', b'value:MYCOMPAT_sv_job_count|JOB|%s|' % jn,
                     b'job_%s_add' % jn, b'=', b'-1',
                     # b'MYCOMPAT_sm_converted_jobs_add', b'=', b'1',
                 ],
@@ -499,7 +499,7 @@ def all_jobs():
         sv_output += export_fields([
             svid, b'=', [
                 b'base', b'=', b'1',
-                b'mult', b'=', b'value:MYCOMPAT_job_quantity|JOB|$JOB$|', #PR_FACTOR_plnt_JOB_
+                b'mult', b'=', b'value:MYCOMPAT_sv_job_quantity|JOB|$JOB$|', #PR_FACTOR_plnt_JOB_
                 b'mult', b'=', mult
             ]
         ]) + b'\n'
