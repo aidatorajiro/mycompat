@@ -6,6 +6,10 @@ MYCOMPAT_sv_job_count = {
 
 }
 
-MYCOMPAT_sv_job_efficiency = {
-    
+MYCOMPAT_sv_totalpop = {
+    set = trigger:num_pops
+	modifier = {
+		add = MYCOMPAT_v_pop_conv
+		is_variable_set = MYCOMPAT_v_pop_conv
+	}
 }

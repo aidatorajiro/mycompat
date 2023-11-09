@@ -1,5 +1,10 @@
 MYCOMPAT_st_totalpop = {
-
+	[[MORE]
+		check_variable_arithmetic = { which = value:MYCOMPAT_sv_totalpop value > $MORE$ }
+	]
+	[[LESS]
+		check_variable_arithmetic = { which = value:MYCOMPAT_sv_totalpop value < $LESS$ }
+	]
 }
 
 MYCOMPAT_st_is_enabled = {

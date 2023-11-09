@@ -52,12 +52,30 @@ def get_segments_from_category(game_path, modid, cat, simple=False):
 def get_scripts(game_path, modid, query):
     return list(glob.glob(os.path.join(game_path, modid, query)))
 
+from enum import Enum
+
+class InlineOption(Enum):
+    Trim = 1
+    Substitute = 2
+    Functional = 3
+    DoNothing = 4
+
 # TODO: implement inline script
-def process_inline(spl):
+def process_inline(spl, inline_option):
     inlines = list(filter(lambda x: x[0] == b'inline_script', spl))
     if len(inlines) > 0:
-        print("WARNING!!!! unprocessed inline script!!!!!!!")
-        return list(filter(lambda x: x[0] != b'inline_script', spl))
+        print("WARNING!!!! inline script!!!!!!!")
+        match inline_option:
+            case InlineOption.Trim:
+                return list(filter(lambda x: x[0] != b'inline_script', spl))
+            case InlineOption.Substitute:
+                print("WARNING@@@@!@!@!! not implemented but contnuing anyway (as Trim option)!!!!!")
+                return list(filter(lambda x: x[0] != b'inline_script', spl))
+            case InlineOption.Functional:
+                raise NotImplementedError("not implemented")
+            case InlineOption.DoNothing:
+                return spl
+        
     else:
         return spl
 
@@ -114,7 +132,7 @@ def get_segments_complex(scr):
 def is_eq_like(c):
     return c == b'=' or c == b'>=' or c == b'<=' or c == b'<' or c == b'>' or c == b'!='
 
-def split3(target):
+def split3(target, inline_option):
     """
     Splits target into a list of length-3 lists.\n
     Asserts that `len(target) % 3 == 0` and the middle element of each list is '=' or ''!=' or '>=' and so on.\n
@@ -123,7 +141,7 @@ def split3(target):
     assert len(target) % 3 == 0
     out = [target[i:i+3] for i in range(0, len(target), 3)]
     assert all([is_eq_like(x[1]) for x in out])
-    return process_inline(out)
+    return process_inline(out, inline_option)
 
 def get_segments_simple(scr):
     result = []
@@ -195,7 +213,7 @@ def get_field_after(target: list, name, n=2):
     except ValueError:
         return None
 
-def add_to_field(target, path, contents):
+def add_to_field(target, path, contents, inline_option):
     """
     Add `contents` to the target, according to the path specified by `path`.
     if the specified path does not exist, it will create one.
@@ -206,14 +224,14 @@ def add_to_field(target, path, contents):
         for c in contents:
             target.append(c)
     else:
-        spl = split3(target)
+        spl = split3(target, inline_option)
         field = get_field(spl, path[0])
         if field == None:
             obj = [path[0], b'=', []]
             target += obj
             spl.append(obj)
             field = obj[2]
-        add_to_field(field, path[1:], contents)
+        add_to_field(field, path[1:], contents, inline_option)
 
 def export_fields(target, tabs=0):
     """
@@ -287,9 +305,9 @@ def all_jobs():
                 continue
 
             if modid == 'v':
-                all_segments = split3(get_segments_from_category(stellaris_game_path, '.', "common/pop_jobs", simple=False))
+                all_segments = split3(get_segments_from_category(stellaris_game_path, '.', "common/pop_jobs", simple=False), InlineOption.Substitute)
             else:
-                all_segments = split3(get_segments_from_category(stellaris_path, modid, "common/pop_jobs", simple=False))
+                all_segments = split3(get_segments_from_category(stellaris_path, modid, "common/pop_jobs", simple=False), InlineOption.Substitute)
 
             job_defs = list(filter(lambda x: isinstance(x[2], list), all_segments))
 
@@ -322,7 +340,7 @@ def all_jobs():
     for modid, job_defs in job_def_table.items():
         for seg in job_defs:
             jn = seg[0]
-            spl = split3(seg[2])
+            spl = split3(seg[2], inline_option=InlineOption.DoNothing)
 
             job_modids = job_to_modid[jn]
             if len(job_modids) > 1:
@@ -345,7 +363,7 @@ def all_jobs():
             # if capped by modifier, change condition to disable it
             # TODO: implement another logic to make use of it (for example, calculate from workshop residue value)
             if get_field(spl, b'is_capped_by_modifier') == b'no':
-                add_to_field(seg[2], [b'possible', b'planet'], [b'MYCOMPAT_st_is_enabled', b'=', b'no'])
+                add_to_field(seg[2], [b'possible', b'planet'], [b'MYCOMPAT_st_is_enabled', b'=', b'no'], InlineOption.DoNothing)
                 print('Overwriting a job that is not capped by modifier ... %s' % jn.decode())
                 job_output += export_fields(seg)
                 continue
@@ -365,7 +383,7 @@ def all_jobs():
                 # TODO: implement overlord_resources (maybe not that hard)
                 match prop_name:
                     case b'overlord_resources' | b'resources':
-                        for x in split3(prop_value):
+                        for x in split3(prop_value, InlineOption.DoNothing):
                             match x[0]:
                                 case b'produces' | b'upkeep':
                                     if b'multiplier' in x[2]:
@@ -386,13 +404,13 @@ def all_jobs():
                         mult = None
                         potential = None
 
-                        spl_prop_value = split3(prop_value)
+                        spl_prop_value = split3(prop_value, InlineOption.DoNothing)
                         modifier_field = get_field(spl_prop_value, b'modifier')
 
                         send = []
 
                         if modifier_field:
-                            spl_prop_value += split3(modifier_field)
+                            spl_prop_value += split3(modifier_field, InlineOption.DoNothing)
 
                         for mod in spl_prop_value:
                             match mod[0]:

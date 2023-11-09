@@ -13,6 +13,7 @@ planet_event = {
 	}
 }
 
+# for debug purpose
 planet_event = {
 	id = mycompat_events.500
 	hide_window = no
