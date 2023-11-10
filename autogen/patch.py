@@ -468,7 +468,7 @@ def all_jobs():
                 b'triggered_planet_modifier', b'=', [
                     b'mult', b'=', b'value:MYCOMPAT_sv_job_count|JOB|%s|' % jn,
                     b'job_%s_add' % jn, b'=', b'-1',
-                    # b'MYCOMPAT_sm_converted_jobs_add', b'=', b'1',
+                    b'MYCOMPAT_sm_converted_jobs_add', b'=', b'1'
                 ],
                 b'planet_modifier', b'=', [
                     b'job_MYCOMPAT_proxy_%s_add' % jn, b'=', b'1'

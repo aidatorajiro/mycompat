@@ -1,10 +1,12 @@
   MYCOMPAT_st_totalpop : scripted_triggers
+  MYCOMPAT_sv_totalpop
   MYCOMPAT_st_is_enabled : scripted_triggers
   MYCOMPAT_v_is_enabled
 MYCOMPAT_icon : icon asset
 MYCOMPAT_icon_small  : icon asset
   MYCOMPAT_cat_job : deposit category
-  MYCOMPAT_v_job_conv : variable : converted job count
-  MYCOMPAT_v_pop_conv : variable : converted pop count
+  MYCOMPAT_vj_* : variable : individual converted job count
+  MYCOMPAT_v_converted_jobs : variable : converted job count
+  MYCOMPAT_v_converted_pops : variable : converted pop count
  MYCOMPAT_sv_job_count : scripted value : 
  MYCOMPAT_sv_job_quantity : scripted value : converted pops aka monpower / sum of converted jobs aka workshop aka job availiability
