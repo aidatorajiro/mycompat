@@ -1,14 +1,27 @@
 MYCOMPAT_se_process_job = {
     if = {
-        limit = { check_modifier_value = { modifier = job_$JOB$_add value >= 1} }
-        export_modifier_to_variable = {
-            modifier = modifier:job_$JOB$_add
-            variable = MYCOMPAT_vj_$JOB$
+        limit = { not = { check_modifier_value = { modifier = job_$JOB$_add value = 0 } } }
+        if = {
+            limit = { not = { is_variable_set = MYCOMPAT_vj_$JOB$ } }
+            set_variable = { which = MYCOMPAT_vj_$JOB$ value = 0 }
+        }
+        change_variable = {
+            which = MYCOMPAT_vj_$JOB$
+            value = modifier:job_$JOB$_add
+        }
+    }
+    if = {
+        limit = {
+            check_variable = { which = MYCOMPAT_vj_$JOB$ value > 0 }
+            not = { has_deposit = MYCOMPAT_d_$JOB$ }
         }
         add_deposit = MYCOMPAT_d_$JOB$
     }
-    else_if = {
-        limit = { has_deposit = MYCOMPAT_d_$JOB$ }
+    if = {
+        limit = {
+            check_variable = { which = MYCOMPAT_vj_$JOB$ value <= 0 }
+            has_deposit = MYCOMPAT_d_$JOB$
+        }
         remove_deposit = MYCOMPAT_d_$JOB$
         clear_variable = MYCOMPAT_vj_$JOB$
     }

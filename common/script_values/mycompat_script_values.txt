@@ -3,11 +3,21 @@ MYCOMPAT_sv_job_quantity = {
 
 	modifier = {
 		is_variable_set = MYCOMPAT_vj_$JOB$
+		add = MYCOMPAT_vj_$JOB$
+	}
+
+	modifier = {
 		is_variable_set = MYCOMPAT_v_converted_pops
-		add = value:MYCOMPAT_vj_$JOB$
-		mult = value:MYCOMPAT_v_converted_pops
+		mult = MYCOMPAT_v_converted_pops
+	}
+
+	modifier = {
 		divide = value:MYCOMPAT_sv_converted_jobs
-		max = value:MYCOMPAT_vj_$JOB$
+	}
+
+	modifier = {
+		is_variable_set = MYCOMPAT_vj_$JOB$
+		max = MYCOMPAT_vj_$JOB$
 	}
 }
 
@@ -19,15 +29,15 @@ MYCOMPAT_sv_converted_jobs = {
 MYCOMPAT_sv_job_count = {
 	base = 0
 	modifier = {
+		add = MYCOMPAT_vj_$JOB$
 		is_variable_set = MYCOMPAT_vj_$JOB$
-		add = value:MYCOMPAT_vj_$JOB$
 	}
 }
 
 MYCOMPAT_sv_totalpop = {
 	set = trigger:num_pops
 	modifier = {
-		is_variable_set = MYCOMPAT_v_converted_pops
 		add = MYCOMPAT_v_converted_pops
+		is_variable_set = MYCOMPAT_v_converted_pops
 	}
 }

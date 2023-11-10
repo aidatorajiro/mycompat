@@ -17,7 +17,7 @@ from config import *
 #
 #######
 
-def get_scripts_from_category(game_path, modid, cat, with_modid=False):
+def get_scripts_from_category(game_path, modid, cat):
     paths = get_scripts(game_path, modid, "%s/*.txt" % cat)
     result = []
     for p in paths:
@@ -295,6 +295,7 @@ def all_jobs():
 
     job_to_modid = {}
     job_def_table = {}
+    var_def_table = {}
 
     for modid in ['v'] + os.listdir(stellaris_path):
         if modid == 'v' or os.path.isdir(os.path.join(stellaris_path, modid)):
@@ -309,7 +310,13 @@ def all_jobs():
             else:
                 all_segments = split3(get_segments_from_category(stellaris_path, modid, "common/pop_jobs", simple=False), InlineOption.Substitute)
 
-            job_defs = list(filter(lambda x: isinstance(x[2], list), all_segments))
+            job_defs = list(filter(lambda x: not x[0].startswith(b"@"), all_segments))
+
+            var_defs = list(filter(lambda x: x[0].startswith(b"@"), all_segments))
+            for v in var_defs:
+                if v[0] in var_def_table:
+                    print("WARNING!!! variable already registered!!!!!! %s : prev value %s <-> conflicting value %s" % (v[0],  var_def_table[v[0]], v[2]))
+                var_def_table[v[0]] = v[2]
 
             jobnames = list([y[0] for y in job_defs])
             for n in jobnames:
@@ -371,6 +378,8 @@ def all_jobs():
             proxyjob_params = [] # proxy job params
 
             danger = 0 # error value for job
+
+            icon_present = False
             
             # iterate job properties
             for property in spl:
@@ -391,7 +400,7 @@ def all_jobs():
                                         x[2][x[2].index(b'multiplier') + 2] = b'value:%s|JOB|%s|' % (get_mod_multid(val), jn)
                                         danger += 1 # be cautious as there's a possibility that the script value won't work
                                     else:
-                                        x[2].insert(0, b'value:MYCOMPAT_sv_job_quantity|JOB|%s|' % jn)
+                                        x[2].insert(0, b'planet.value:MYCOMPAT_sv_job_quantity|JOB|%s|' % jn)
                                         x[2].insert(0, b'=')
                                         x[2].insert(0, b'multiplier')
                                 case b'category':
@@ -444,7 +453,7 @@ def all_jobs():
                                 b'=',
                                 [   b'mult',
                                     b'=',
-                                    b'value:MYCOMPAT_sv_job_quantity|JOB|%s|' % jn
+                                    b'planet.value:MYCOMPAT_sv_job_quantity|JOB|%s|' % jn
                                         if not mult else b'value:%s|JOB|%s|' % (get_mod_multid(mult), jn)
                                 ] + ([
                                     b'potential',
@@ -452,8 +461,10 @@ def all_jobs():
                                     potential
                                 ] if potential != None else []) + send
                             ]
-                    case b'building_icon' | b'category' | b'clothes_texture_index' | b'desc' | b'icon':
+                    case _:
                         proxyjob_params += [prop_name, b'=', prop_value]
+                        if prop_name == b'icon':
+                            icon_present = True
             
             danger_map[jn] = danger
 
@@ -471,13 +482,19 @@ def all_jobs():
                     b'MYCOMPAT_sm_converted_jobs_add', b'=', b'1'
                 ],
                 b'planet_modifier', b'=', [
-                    b'job_MYCOMPAT_proxy_%s_add' % jn, b'=', b'1'
+                    b'job_MYCOMPAT_j_%s_add' % jn, b'=', b'1'
                 ]
             ]
 
             deposit_output += export_fields([b'MYCOMPAT_d_%s' % jn, b'=', deposit_params])
 
+            if not icon_present:
+                proxyjob_params = [b'icon', b'=', jn] + proxyjob_params
+
             job_output += export_fields([b'MYCOMPAT_j_%s' % jn, b'=', proxyjob_params])
+
+    for x, y in var_def_table.items():
+        job_output = export_fields([x, b'=', y]) + job_output
 
     danger_jobs = list(filter(lambda x: x[1] > 0, danger_map.items()))
 
@@ -517,7 +534,7 @@ def all_jobs():
         sv_output += export_fields([
             svid, b'=', [
                 b'base', b'=', b'1',
-                b'mult', b'=', b'value:MYCOMPAT_sv_job_quantity|JOB|$JOB$|', #PR_FACTOR_plnt_JOB_
+                b'mult', b'=', b'planet.value:MYCOMPAT_sv_job_quantity|JOB|$JOB$|', #PR_FACTOR_plnt_JOB_
                 b'mult', b'=', mult
             ]
         ]) + b'\n'
