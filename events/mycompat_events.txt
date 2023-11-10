@@ -18,7 +18,9 @@ planet_event = {
 		}
 		every_owned_pop = {
 			limit = { is_unemployed = yes }
-			change_variable = { which = prev.MYCOMPAT_v_converted_pops value = 1 }
+			prev = {
+				change_variable = { which = MYCOMPAT_v_converted_pops value = 1 }
+			}
 			kill_pop = yes
 		}
 		

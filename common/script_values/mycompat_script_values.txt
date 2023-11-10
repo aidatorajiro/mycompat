@@ -2,13 +2,13 @@ MYCOMPAT_sv_job_quantity = {
 	base = 0
 
 	modifier = {
-		is_variable_set = MYCOMPAT_vj_$JOB$
 		add = MYCOMPAT_vj_$JOB$
+		is_variable_set = MYCOMPAT_vj_$JOB$
 	}
 
 	modifier = {
-		is_variable_set = MYCOMPAT_v_converted_pops
 		mult = MYCOMPAT_v_converted_pops
+		is_variable_set = MYCOMPAT_v_converted_pops
 	}
 
 	modifier = {
@@ -16,8 +16,8 @@ MYCOMPAT_sv_job_quantity = {
 	}
 
 	modifier = {
-		is_variable_set = MYCOMPAT_vj_$JOB$
 		max = MYCOMPAT_vj_$JOB$
+		is_variable_set = MYCOMPAT_vj_$JOB$
 	}
 }
 
