@@ -28,6 +28,25 @@ planet_event = {
 	}
 }
 
+planet_event = {
+	id = mycompat_events.2
+	hide_window = yes
+	is_triggered_only = no
+	mean_time_to_happen = { days = 30 }
+	pre_triggers = {
+		has_owner = yes
+	}
+	trigger = {
+		not = { is_variable_set = MYCOMPAT_st_is_enabled }
+	}
+	immediate = {
+		set_variable = {
+			which = MYCOMPAT_v_is_enabled
+			value = 1
+		}
+	}
+}
+
 # for debug purpose
 planet_event = {
 	id = mycompat_events.500

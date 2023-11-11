@@ -63,6 +63,15 @@ effect every_country = {
     }
 }
 
+effect every_country = {
+    every_owned_planet = {
+        set_variable = {
+            which = MYCOMPAT_v_is_enabled
+            value = 1
+        }
+    }
+}
+
 effect this = {
     set_variable = {
         which = MYCOMPAT_v_is_enabled
