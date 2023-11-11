@@ -55,6 +55,9 @@ mod_excludes += [
 
 # mod_order is the dictionary of pairs of job name and mod id, suggesting which job definition associating with the mod is used in case of the job definition conflict.
 # If there is any mod conflict, the program will give some instruction to edit this field.
+
+job_excludes = [b"dummicist", b"matter_reanimator"]
+
 mod_order = {
     b"fe_overseer": "1995601384",
     b"fe_sky_cardinal": "1995601384",

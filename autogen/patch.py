@@ -349,6 +349,10 @@ def all_jobs():
             jn = seg[0]
             spl = split3(seg[2], inline_option=InlineOption.DoNothing)
 
+            if jn in job_excludes:
+                print("manually excluded job detected. Discarding this one.", jn, modid)
+                continue
+
             job_modids = job_to_modid[jn]
             if len(job_modids) > 1:
                 if 'v' in job_modids and len(job_modids) == 2:
