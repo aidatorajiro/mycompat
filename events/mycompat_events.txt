@@ -125,12 +125,14 @@ planet_event = {
 					which = MYCOMPAT_tmp_calc_1
 					value = -1
 				}
-			}
-		}
 
-		change_variable = {
-			which = MYCOMPAT_v_converted_pops
-			value = owner.MYCOMPAT_tmp_calc_1
+				prev = {
+					change_variable = {
+						which = MYCOMPAT_v_converted_pops
+						value = owner.MYCOMPAT_tmp_calc_1
+					}
+				}
+			}
 		}
 	}
 }
