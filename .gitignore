@@ -1,3 +1,4 @@
 zzzzzzzzzzzzzzzzzzzz_*.txt
 __pycache__
 *.backup
+localisation/*/mycompat_ag_l_*

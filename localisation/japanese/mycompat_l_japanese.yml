@@ -1,0 +1,19 @@
+﻿l_japanese:
+
+  mycompat.4.name: "Planet Information"
+
+  mycompat.4.desc: "Converted Pop Count [Root.MYCOMPAT_v_converted_pops]\nConverted Job Count [Root.MYCOMPAT_tmp_show_1]"
+
+  mycompat.3.name: "Pop Distributed"
+
+  mycompat.3.desc: "Total Emmigrated Pops [Root.Owner.MYCOMPAT_tmp_calc_1]\nNumber of Worlds [Root.Owner.MYCOMPAT_tmp_calc_2]"
+
+  mycompat.ret: "Return"
+
+  decision_mycompat_planet_info: "MyCompat Mod - Show Planet Information"
+
+  decision_mycompat_planet_info_desc: "Show Planet Information Dialog"
+
+  decision_mycompat_distribute: "MyCompat Mod - Distribute Virtual Pops"
+
+  decision_mycompat_distribute_desc: "Distribute Virtual Pops"

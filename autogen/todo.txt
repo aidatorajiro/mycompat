@@ -1,8 +1,8 @@
- MYCOMPAT_totalpop : scripted_triggers
- MYCOMPAT_is_enabled : scripted_triggers
-MYCOMPAT_icon : icon asset
-MYCOMPAT_icon_small  : icon asset
- MYCOMPAT_cat_job : deposit category
- MYCOMPAT_job_count : variable : converted job count
- MYCOMPAT_job_quantity : scripted value : converted job count * efficiency
- MYCOMPAT_job_efficiency : scripted value : converted pops aka monpower / sum of converted jobs aka workshop aka job availiability
+TODOs
+
+- [ ] crime
+- [ ] distribution of excess pops
+- [ ] housing
+- [ ] customization ( maybe? )
+- [ ] temporal jobs
+- [x] load mod lists

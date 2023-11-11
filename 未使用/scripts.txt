@@ -41,6 +41,57 @@ effect every_playable_country = {
     }
 }
 
+effect every_country = {
+    every_owned_planet = {
+        set_variable = {
+            which = MYCOMPAT_v_is_enabled
+            value = 1
+        }
+        if = {
+            limit = { not = { is_variable_set = MYCOMPAT_v_converted_pops } }
+            set_variable = { which = MYCOMPAT_v_converted_pops value = 0 }
+        }
+        every_owned_pop = {
+            limit = { is_unemployed = yes }
+            prev = {
+                change_variable = { which = MYCOMPAT_v_converted_pops value = 1 }
+            }
+            kill_pop = yes
+        }
+        
+        MYCOMPAT_agse_planet = yes
+    }
+}
+
+effect every_country = {
+    every_owned_planet = {
+        set_variable = {
+            which = MYCOMPAT_v_is_enabled
+            value = 1
+        }
+    }
+}
+
+effect this = {
+    set_variable = {
+        which = MYCOMPAT_v_is_enabled
+        value = 1
+    }
+    if = {
+        limit = { not = { is_variable_set = MYCOMPAT_v_converted_pops } }
+        set_variable = { which = MYCOMPAT_v_converted_pops value = 0 }
+    }
+    every_owned_pop = {
+        limit = { is_unemployed = yes }
+        prev = {
+            change_variable = { which = MYCOMPAT_v_converted_pops value = 1 }
+        }
+        kill_pop = yes
+    }
+    
+    MYCOMPAT_agse_planet = yes
+}
+
 effect this.owner = {
     set_country_flag = dont_relife
     every_owned_leader = {
@@ -70,7 +121,43 @@ effect this.owner = {
 
 
 
+effect random_country = {
+    limit = {is_variable_set = kaiser_alloy_income}
+    every_owned_starbase = {
+        solar_system = {
+            every_neighbor_system = {
+                limit = {
+                    not = {
+                        or = {
+                            has_star_flag = jupitwo_system
+                            has_star_flag = flusion_system
+                        }
+                    }
+                }
+                remove_hyperlane = {
+                    from = this
+                    to = prev
+                }
+            }
+        }
+    }
+}
 
+effect random_country = {
+    limit = {is_variable_set = kaiser_alloy_income}
+    destroy_country = yes
+}
+
+effect random_system = {
+    limit = { has_star_flag = flusion_system }
+    random_system = {
+        limit = { has_star_flag = debugconnect }
+        add_hyperlane = {
+                    from = this
+                    to = prev
+        }
+    }
+}
 
 
 

@@ -9,6 +9,7 @@ desc
 exempt_from_ai_amenity_prioritization
 icon
 ignores_favorite
+inline_script
 is_capped_by_modifier
 overlord_resources
 planet_modifier

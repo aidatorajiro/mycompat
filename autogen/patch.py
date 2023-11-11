@@ -17,7 +17,7 @@ from config import *
 #
 #######
 
-def get_scripts_from_category(game_path, modid, cat, with_modid=False):
+def get_scripts_from_category(game_path, modid, cat):
     paths = get_scripts(game_path, modid, "%s/*.txt" % cat)
     result = []
     for p in paths:
@@ -52,12 +52,30 @@ def get_segments_from_category(game_path, modid, cat, simple=False):
 def get_scripts(game_path, modid, query):
     return list(glob.glob(os.path.join(game_path, modid, query)))
 
+from enum import Enum
+
+class InlineOption(Enum):
+    Trim = 1
+    Substitute = 2
+    Functional = 3
+    DoNothing = 4
+
 # TODO: implement inline script
-def process_inline(spl):
+def process_inline(spl, inline_option):
     inlines = list(filter(lambda x: x[0] == b'inline_script', spl))
     if len(inlines) > 0:
-        print("WARNING!!!! unprocessed inline script!!!!!!!")
-        return list(filter(lambda x: x[0] != b'inline_script', spl))
+        print("WARNING!!!! inline script!!!!!!!")
+        match inline_option:
+            case InlineOption.Trim:
+                return list(filter(lambda x: x[0] != b'inline_script', spl))
+            case InlineOption.Substitute:
+                print("WARNING@@@@!@!@!! not implemented but contnuing anyway (as Trim option)!!!!!")
+                return list(filter(lambda x: x[0] != b'inline_script', spl))
+            case InlineOption.Functional:
+                raise NotImplementedError("not implemented")
+            case InlineOption.DoNothing:
+                return spl
+        
     else:
         return spl
 
@@ -114,7 +132,7 @@ def get_segments_complex(scr):
 def is_eq_like(c):
     return c == b'=' or c == b'>=' or c == b'<=' or c == b'<' or c == b'>' or c == b'!='
 
-def split3(target):
+def split3(target, inline_option):
     """
     Splits target into a list of length-3 lists.\n
     Asserts that `len(target) % 3 == 0` and the middle element of each list is '=' or ''!=' or '>=' and so on.\n
@@ -123,7 +141,7 @@ def split3(target):
     assert len(target) % 3 == 0
     out = [target[i:i+3] for i in range(0, len(target), 3)]
     assert all([is_eq_like(x[1]) for x in out])
-    return process_inline(out)
+    return process_inline(out, inline_option)
 
 def get_segments_simple(scr):
     result = []
@@ -156,13 +174,13 @@ def num_pops_patch(segment):
     def repfunc(m):
         match m.group(1):
             case b'>=':
-                r = b"MYCOMPAT_totalpop = { MORE = %s }" % str(int(m.group(2)) - 1).encode()
+                r = b"MYCOMPAT_st_totalpop = { MORE = %s }" % str(int(m.group(2)) - 1).encode()
             case b'<=':
-                r = b"MYCOMPAT_totalpop = { LESS = %s }" % str(int(m.group(2)) + 1).encode()
+                r = b"MYCOMPAT_st_totalpop = { LESS = %s }" % str(int(m.group(2)) + 1).encode()
             case b'>':
-                r = b"MYCOMPAT_totalpop = { MORE = %s }" % str(int(m.group(2))).encode()
+                r = b"MYCOMPAT_st_totalpop = { MORE = %s }" % str(int(m.group(2))).encode()
             case b'<':
-                r = b"MYCOMPAT_totalpop = { LESS = %s }" % str(int(m.group(2))).encode()
+                r = b"MYCOMPAT_st_totalpop = { LESS = %s }" % str(int(m.group(2))).encode()
         return r
     if b"num_pops" in segment:
         replaced = re.sub(rb"num_pops\s*(>=|<=|>|<)\s*(\d+)", repfunc, segment)
@@ -195,7 +213,7 @@ def get_field_after(target: list, name, n=2):
     except ValueError:
         return None
 
-def add_to_field(target, path, contents):
+def add_to_field(target, path, contents, inline_option):
     """
     Add `contents` to the target, according to the path specified by `path`.
     if the specified path does not exist, it will create one.
@@ -206,14 +224,14 @@ def add_to_field(target, path, contents):
         for c in contents:
             target.append(c)
     else:
-        spl = split3(target)
+        spl = split3(target, inline_option)
         field = get_field(spl, path[0])
         if field == None:
             obj = [path[0], b'=', []]
             target += obj
             spl.append(obj)
             field = obj[2]
-        add_to_field(field, path[1:], contents)
+        add_to_field(field, path[1:], contents, inline_option)
 
 def export_fields(target, tabs=0):
     """
@@ -277,6 +295,7 @@ def all_jobs():
 
     job_to_modid = {}
     job_def_table = {}
+    var_def_table = {}
 
     for modid in ['v'] + os.listdir(stellaris_path):
         if modid == 'v' or os.path.isdir(os.path.join(stellaris_path, modid)):
@@ -287,11 +306,17 @@ def all_jobs():
                 continue
 
             if modid == 'v':
-                all_segments = split3(get_segments_from_category(stellaris_game_path, '.', "common/pop_jobs", simple=False))
+                all_segments = split3(get_segments_from_category(stellaris_game_path, '.', "common/pop_jobs", simple=False), InlineOption.Substitute)
             else:
-                all_segments = split3(get_segments_from_category(stellaris_path, modid, "common/pop_jobs", simple=False))
+                all_segments = split3(get_segments_from_category(stellaris_path, modid, "common/pop_jobs", simple=False), InlineOption.Substitute)
 
-            job_defs = list(filter(lambda x: isinstance(x[2], list), all_segments))
+            job_defs = list(filter(lambda x: not x[0].startswith(b"@"), all_segments))
+
+            var_defs = list(filter(lambda x: x[0].startswith(b"@"), all_segments))
+            for v in var_defs:
+                if v[0] in var_def_table:
+                    print("WARNING!!! variable already registered!!!!!! %s : prev value %s <-> conflicting value %s" % (v[0],  var_def_table[v[0]], v[2]))
+                var_def_table[v[0]] = v[2]
 
             jobnames = list([y[0] for y in job_defs])
             for n in jobnames:
@@ -322,7 +347,11 @@ def all_jobs():
     for modid, job_defs in job_def_table.items():
         for seg in job_defs:
             jn = seg[0]
-            spl = split3(seg[2])
+            spl = split3(seg[2], inline_option=InlineOption.DoNothing)
+
+            if jn in job_excludes:
+                print("manually excluded job detected. Discarding this one.", jn, modid)
+                continue
 
             job_modids = job_to_modid[jn]
             if len(job_modids) > 1:
@@ -345,7 +374,7 @@ def all_jobs():
             # if capped by modifier, change condition to disable it
             # TODO: implement another logic to make use of it (for example, calculate from workshop residue value)
             if get_field(spl, b'is_capped_by_modifier') == b'no':
-                add_to_field(seg[2], [b'possible', b'planet'], [b'MYCOMPAT_is_enabled', b'=', b'no'])
+                add_to_field(seg[2], [b'possible', b'planet'], [b'MYCOMPAT_st_is_enabled', b'=', b'no'], InlineOption.DoNothing)
                 print('Overwriting a job that is not capped by modifier ... %s' % jn.decode())
                 job_output += export_fields(seg)
                 continue
@@ -353,6 +382,8 @@ def all_jobs():
             proxyjob_params = [] # proxy job params
 
             danger = 0 # error value for job
+
+            icon_present = False
             
             # iterate job properties
             for property in spl:
@@ -365,7 +396,7 @@ def all_jobs():
                 # TODO: implement overlord_resources (maybe not that hard)
                 match prop_name:
                     case b'overlord_resources' | b'resources':
-                        for x in split3(prop_value):
+                        for x in split3(prop_value, InlineOption.DoNothing):
                             match x[0]:
                                 case b'produces' | b'upkeep':
                                     if b'multiplier' in x[2]:
@@ -373,7 +404,7 @@ def all_jobs():
                                         x[2][x[2].index(b'multiplier') + 2] = b'value:%s|JOB|%s|' % (get_mod_multid(val), jn)
                                         danger += 1 # be cautious as there's a possibility that the script value won't work
                                     else:
-                                        x[2].insert(0, b'value:MYCOMPAT_job_quantity|JOB|%s|' % jn)
+                                        x[2].insert(0, b'planet.value:MYCOMPAT_sv_job_quantity|JOB|%s|' % jn)
                                         x[2].insert(0, b'=')
                                         x[2].insert(0, b'multiplier')
                                 case b'category':
@@ -386,13 +417,13 @@ def all_jobs():
                         mult = None
                         potential = None
 
-                        spl_prop_value = split3(prop_value)
+                        spl_prop_value = split3(prop_value, InlineOption.DoNothing)
                         modifier_field = get_field(spl_prop_value, b'modifier')
 
                         send = []
 
                         if modifier_field:
-                            spl_prop_value += split3(modifier_field)
+                            spl_prop_value += split3(modifier_field, InlineOption.DoNothing)
 
                         for mod in spl_prop_value:
                             match mod[0]:
@@ -426,7 +457,7 @@ def all_jobs():
                                 b'=',
                                 [   b'mult',
                                     b'=',
-                                    b'value:MYCOMPAT_job_quantity|JOB|%s|' % jn
+                                    b'planet.value:MYCOMPAT_sv_job_quantity|JOB|%s|' % jn
                                         if not mult else b'value:%s|JOB|%s|' % (get_mod_multid(mult), jn)
                                 ] + ([
                                     b'potential',
@@ -434,8 +465,10 @@ def all_jobs():
                                     potential
                                 ] if potential != None else []) + send
                             ]
-                    case b'building_icon' | b'category' | b'clothes_texture_index' | b'desc' | b'icon':
+                    case _:
                         proxyjob_params += [prop_name, b'=', prop_value]
+                        if prop_name == b'icon':
+                            icon_present = True
             
             danger_map[jn] = danger
 
@@ -448,18 +481,24 @@ def all_jobs():
                 b'should_swap_deposit_on_terraforming', b'=', b'no',
                 b'drop_weight', b'=', [ b'weight', b'=', b'0' ],
                 b'triggered_planet_modifier', b'=', [
-                    b'mult', b'=', b'value:MYCOMPAT_job_count|JOB|%s|' % jn,
+                    b'mult', b'=', b'value:MYCOMPAT_sv_job_count|JOB|%s|' % jn,
                     b'job_%s_add' % jn, b'=', b'-1',
-                    # b'MYCOMPAT_sm_converted_jobs_add', b'=', b'1',
+                    b'MYCOMPAT_sm_converted_jobs_add', b'=', b'1'
                 ],
                 b'planet_modifier', b'=', [
-                    b'job_MYCOMPAT_proxy_%s_add' % jn, b'=', b'1'
+                    b'job_MYCOMPAT_j_%s_add' % jn, b'=', b'1'
                 ]
             ]
 
             deposit_output += export_fields([b'MYCOMPAT_d_%s' % jn, b'=', deposit_params])
 
+            if not icon_present:
+                proxyjob_params = [b'icon', b'=', jn] + proxyjob_params
+
             job_output += export_fields([b'MYCOMPAT_j_%s' % jn, b'=', proxyjob_params])
+
+    for x, y in var_def_table.items():
+        job_output = export_fields([x, b'=', y]) + job_output
 
     danger_jobs = list(filter(lambda x: x[1] > 0, danger_map.items()))
 
@@ -499,7 +538,7 @@ def all_jobs():
         sv_output += export_fields([
             svid, b'=', [
                 b'base', b'=', b'1',
-                b'mult', b'=', b'value:MYCOMPAT_job_quantity|JOB|$JOB$|', #PR_FACTOR_plnt_JOB_
+                b'mult', b'=', b'planet.value:MYCOMPAT_sv_job_quantity|JOB|$JOB$|', #PR_FACTOR_plnt_JOB_
                 b'mult', b'=', mult
             ]
         ]) + b'\n'
