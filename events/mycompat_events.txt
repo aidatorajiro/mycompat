@@ -28,6 +28,7 @@ planet_event = {
 	}
 }
 
+
 planet_event = {
 	id = mycompat_events.2
 	hide_window = yes
@@ -37,13 +38,140 @@ planet_event = {
 		has_owner = yes
 	}
 	trigger = {
-		not = { is_variable_set = MYCOMPAT_st_is_enabled }
+		not = { is_variable_set = MYCOMPAT_v_is_enabled }
 	}
 	immediate = {
 		set_variable = {
 			which = MYCOMPAT_v_is_enabled
 			value = 1
 		}
+	}
+}
+
+# distribute excess pops to another planet
+planet_event = {
+	id = mycompat_events.3
+	hide_window = no
+	is_triggered_only = yes
+	title = "mycompat.3.name"
+	desc = mycompat.3.desc
+	pre_triggers = {
+		has_owner = yes
+	}
+	trigger = {
+		MYCOMPAT_st_is_enabled = yes
+	}
+	option = {
+		name = mycompat.ret
+	}
+	immediate = {
+		owner = {
+			set_variable = {
+				which = MYCOMPAT_tmp_calc_1
+				value = prev.MYCOMPAT_v_converted_pops
+			}
+			
+			subtract_variable = {
+				which = MYCOMPAT_tmp_calc_1
+				value = prev.value:MYCOMPAT_sv_converted_jobs
+			}
+			
+			if = {
+				limit = {
+					check_variable = {
+						which = MYCOMPAT_tmp_calc_1
+						value > 0
+					}
+				}
+			
+				set_variable = {
+					which = MYCOMPAT_tmp_calc_2
+					value = 0
+				}
+
+				every_owned_planet = {
+					limit = {
+						MYCOMPAT_st_is_enabled = yes
+					}
+					change_variable = {
+						which = prev.MYCOMPAT_tmp_calc_2
+						value = 1
+					}
+				}
+
+				divide_variable = {
+					which = MYCOMPAT_tmp_calc_1
+					value = MYCOMPAT_tmp_calc_2
+				}
+
+				floor_variable = MYCOMPAT_tmp_calc_1
+
+				every_owned_planet = {
+					limit = {
+						MYCOMPAT_st_is_enabled = yes
+					}
+					change_variable = {
+						which = MYCOMPAT_v_converted_pops
+						value = prev.MYCOMPAT_tmp_calc_1
+					}
+				}
+
+				multiply_variable = {
+					which = MYCOMPAT_tmp_calc_1
+					value = MYCOMPAT_tmp_calc_2
+				}
+
+				multiply_variable = {
+					which = MYCOMPAT_tmp_calc_1
+					value = -1
+				}
+			}
+		}
+
+		change_variable = {
+			which = MYCOMPAT_v_converted_pops
+			value = owner.MYCOMPAT_tmp_calc_1
+		}
+	}
+}
+
+# show planet info
+planet_event = {
+	id = mycompat_events.4
+	title = "mycompat.4.name"
+	hide_window = no
+	is_triggered_only = yes
+	pre_triggers = {
+		has_owner = yes
+	}
+	trigger = {
+		MYCOMPAT_st_is_enabled = yes
+	}
+	desc = mycompat.4.desc
+	option = {
+		name = mycompat.ret
+	}
+	immediate = {
+		set_variable = {
+			which = MYCOMPAT_tmp_show_1
+			value = value:MYCOMPAT_sv_converted_jobs
+		}
+	}
+}
+
+# disable mycompat
+planet_event = {
+	id = mycompat_events.5
+	hide_window = yes
+	is_triggered_only = no
+	mean_time_to_happen = { days = 30 }
+	pre_triggers = {
+		has_owner = yes
+	}
+	trigger = {
+		MYCOMPAT_st_is_enabled = no
+	}
+	immediate = {
 	}
 }
 

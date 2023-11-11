@@ -1,0 +1,25 @@
+decision_mycompat_planet_info = {
+	owned_planets_only = yes
+	allow = {
+		owner = { is_ai = no }
+		MYCOMPAT_st_is_enabled = yes
+	}
+	effect = {
+		planet_event = {
+			id = mycompat_events.4
+		}
+	}
+}
+
+decision_mycompat_distribute = {
+	owned_planets_only = yes
+	allow = {
+		owner = { is_ai = no }
+		MYCOMPAT_st_is_enabled = yes
+	}
+	effect = {
+		planet_event = {
+			id = mycompat_events.3
+		}
+	}
+}
