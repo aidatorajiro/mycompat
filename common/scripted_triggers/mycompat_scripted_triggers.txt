@@ -12,4 +12,5 @@ MYCOMPAT_st_is_enabled = {
 		which = MYCOMPAT_v_is_enabled
 		value = 1
 	}
+	is_colony = yes
 }

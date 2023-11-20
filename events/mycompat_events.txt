@@ -66,6 +66,9 @@ planet_event = {
 	}
 	immediate = {
 		owner = {
+			clear_variable = MYCOMPAT_tmp_calc_1
+			clear_variable = MYCOMPAT_tmp_calc_2
+			
 			set_variable = {
 				which = MYCOMPAT_tmp_calc_1
 				value = prev.MYCOMPAT_v_converted_pops
@@ -92,44 +95,58 @@ planet_event = {
 				every_owned_planet = {
 					limit = {
 						MYCOMPAT_st_is_enabled = yes
+						check_variable_arithmetic = {
+							which = value:MYCOMPAT_sv_converted_jobs
+							subtract = MYCOMPAT_v_converted_pops
+							value > 0
+						}
 					}
-					change_variable = {
-						which = prev.MYCOMPAT_tmp_calc_2
-						value = 1
+					prev = {
+						change_variable = {
+							which = MYCOMPAT_tmp_calc_2
+							value = 1
+						}
 					}
 				}
 
-				divide_variable = {
-					which = MYCOMPAT_tmp_calc_1
-					value = MYCOMPAT_tmp_calc_2
-				}
-
-				floor_variable = MYCOMPAT_tmp_calc_1
-
-				every_owned_planet = {
+				if = {
 					limit = {
-						MYCOMPAT_st_is_enabled = yes
+						check_variable = {
+							which = MYCOMPAT_tmp_calc_2
+							value > 0
+						}
 					}
-					change_variable = {
-						which = MYCOMPAT_v_converted_pops
-						value = prev.MYCOMPAT_tmp_calc_1
+
+					divide_variable = {
+						which = MYCOMPAT_tmp_calc_1
+						value = MYCOMPAT_tmp_calc_2
 					}
-				}
 
-				multiply_variable = {
-					which = MYCOMPAT_tmp_calc_1
-					value = MYCOMPAT_tmp_calc_2
-				}
+					every_owned_planet = {
+						limit = {
+							MYCOMPAT_st_is_enabled = yes
+							check_variable_arithmetic = {
+								which = value:MYCOMPAT_sv_converted_jobs
+								subtract = MYCOMPAT_v_converted_pops
+								value > 0
+							}
+						}
+						change_variable = {
+							which = MYCOMPAT_v_converted_pops
+							value = prev.MYCOMPAT_tmp_calc_1
+						}
+					}
 
-				multiply_variable = {
-					which = MYCOMPAT_tmp_calc_1
-					value = -1
-				}
+					multiply_variable = {
+						which = MYCOMPAT_tmp_calc_1
+						value = MYCOMPAT_tmp_calc_2
+					}
 
-				prev = {
-					change_variable = {
-						which = MYCOMPAT_v_converted_pops
-						value = owner.MYCOMPAT_tmp_calc_1
+					prev = {
+						subtract_variable = {
+							which = MYCOMPAT_v_converted_pops
+							value = prev.MYCOMPAT_tmp_calc_1
+						}
 					}
 				}
 			}
