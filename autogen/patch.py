@@ -355,21 +355,16 @@ def all_jobs():
 
             job_modids = job_to_modid[jn]
             if len(job_modids) > 1:
-                if 'v' in job_modids and len(job_modids) == 2:
-                    if modid == 'v':
-                        print("job overwrite detected. Discarding this one.", jn, modid)
-                        continue
+                def calculate_mod_index_from_mod_order(m):
+                    if m == 'v':
+                        return (-99999, m)
                     else:
-                        print("job overwrite detected. Using this one.", jn, modid)
+                        return (mod_order.index(m), m)
+                _, max_modid = max([calculate_mod_index_from_mod_order(m) for m in job_modids], key=lambda x: x[0])
+                if modid == max_modid:
+                    print("job overwrite detected: using this mod")
                 else:
-                    if not jn in mod_order:
-                        print("Conflict detected! \n please update mod_order in config.py! \n [[[Original dict]]] \n %s \n Please choose ONE modid (as a string) from each entry in the given dict, and overwrite the entry value with the modid." % dict(filter(lambda x: len(x[1])>1, job_to_modid.items())))
-                        sys.exit()
-                    if modid != mod_order[jn]:
-                        print("job overwrite detected. Discarding this one.", jn, modid)
-                        continue
-                    else:
-                        print("job overwrite detected. Using this one.", jn, modid)
+                    print("job overwrite detected: skip this mod")
 
             # if capped by modifier, change condition to disable it
             # TODO: implement another logic to make use of it (for example, calculate from workshop residue value)
