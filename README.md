@@ -1,4 +1,4 @@
-# mycompat: auto-generated job quantization
+# mycompat: auto-generated job dequantization
 がんばったけど......
 
 - Do something like [kasako's PR](https://steamcommunity.com/sharedfiles/filedetails/?id=2529002857), with auto-generation feature and simpler mechanics
