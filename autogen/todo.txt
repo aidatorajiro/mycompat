@@ -1,8 +1,0 @@
-TODOs
-
-- [ ] crime
-- [ ] distribution of excess pops
-- [ ] housing
-- [ ] customization ( maybe? )
-- [ ] temporal jobs
-- [x] load mod lists
