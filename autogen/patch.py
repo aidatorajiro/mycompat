@@ -203,26 +203,6 @@ def get_segments_simple(scr):
             first_bracket_arrived = False
     return result
 
-def num_pops_patch(segment):
-    def repfunc(m):
-        match m.group(1):
-            case b'>=':
-                r = b"MYCOMPAT_st_totalpop = { MORE = %s }" % str(int(m.group(2)) - 1).encode()
-            case b'<=':
-                r = b"MYCOMPAT_st_totalpop = { LESS = %s }" % str(int(m.group(2)) + 1).encode()
-            case b'>':
-                r = b"MYCOMPAT_st_totalpop = { MORE = %s }" % str(int(m.group(2))).encode()
-            case b'<':
-                r = b"MYCOMPAT_st_totalpop = { LESS = %s }" % str(int(m.group(2))).encode()
-        return r
-    if b"num_pops" in segment:
-        replaced = re.sub(rb"num_pops\s*(>=|<=|>|<)\s*(\d+)", repfunc, segment)
-        if b"num_pops" in replaced:
-            raise NotImplementedError("WARNING !!! unsupported num_pops expression !!!")
-        return replaced
-    else:
-        return None
-
 def patchpath(p):
     return os.path.join(os.path.dirname(__file__), "../", p)
 
@@ -358,11 +338,15 @@ def all_buildings():
                 if b"num_pops" in x:
                     i = x.index(b"num_pops")
                     return is_eq_like(x[i+1]) and re.match(rb"\d+", x[i+2])
+                elif b"num_sapient_pops" in x:
+                    i = x.index(b"num_sapient_pops")
+                    return is_eq_like(x[i+1]) and re.match(rb"\d+", x[i+2])
                 else:
                     return False
             
+            # TODO: sapient
             def apply(x):
-                indices = [i for i, v in enumerate(x) if v == b"num_pops"]
+                indices = [i for i, v in enumerate(x) if v == b"num_pops" or v == b"num_sapient_pops"]
                 for i in indices:
                     # MYCOMPAT_st_totalpop = { MORE = %s }
                     x[i] = b"MYCOMPAT_st_totalpop"
@@ -377,7 +361,7 @@ def all_buildings():
                         case b'<':
                             r = [ b"LESS", b"=", str(int(n)).encode()]
                         case _:
-                            raise NotImplementedError("ERROR: unsupported num_pops")
+                            raise NotImplementedError("ERROR: unsupported num_pops / num_sapient_pops")
                     x[i + 1] = b"="
                     x[i + 2] = r
             
