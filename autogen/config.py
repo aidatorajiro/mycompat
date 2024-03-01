@@ -53,3 +53,5 @@ mod_excludes += [
 # +++++++++++++++++ #
 
 job_excludes = [b"dummicist", b"matter_reanimator"]
+
+AOT = False

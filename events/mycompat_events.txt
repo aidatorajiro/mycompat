@@ -194,6 +194,33 @@ planet_event = {
 	}
 }
 
+# convert virtual pop to actual pop
+planet_event = {
+	id = mycompat_events.6
+	hide_window = yes
+	is_triggered_only = yes
+	pre_triggers = {
+		has_owner = yes
+	}
+	trigger = {
+		MYCOMPAT_st_is_enabled = yes
+	}
+	immediate = {
+		if = {
+			limit = {
+				check_variable = {
+					which = MYCOMPAT_v_converted_pops
+					value > 1
+				}
+			}
+			create_pop = {
+				species = owner_main_species
+			}
+			change_variable = { which = MYCOMPAT_v_converted_pops value = -1 }
+		}
+	}
+}
+
 # for debug purpose
 planet_event = {
 	id = mycompat_events.500

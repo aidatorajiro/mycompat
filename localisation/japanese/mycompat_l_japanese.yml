@@ -10,10 +10,12 @@
 
   mycompat.ret: "Return"
 
-  decision_mycompat_planet_info: "MyCompat Mod - Show Planet Information"
+  decision_mycompat_planet_info: "MyCompat - Show Planet Information"
 
-  decision_mycompat_planet_info_desc: "Show Planet Information Dialog"
+  decision_mycompat_planet_info_desc: "MyCompat - Show Planet Information Dialog"
 
-  decision_mycompat_distribute: "MyCompat Mod - Distribute Virtual Pops"
+  decision_mycompat_distribute: "MyCompat - Distribute Virtual Pops"
 
-  decision_mycompat_distribute_desc: "Distribute Virtual Pops"
+  decision_mycompat_distribute_desc: "MyCompat - Distribute Virtual Pops"
+
+  decision_mycompat_convert_to_actual_desc: "MyCompat - Convert to an actual pop"

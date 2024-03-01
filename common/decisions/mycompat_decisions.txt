@@ -23,3 +23,16 @@ decision_mycompat_distribute = {
 		}
 	}
 }
+
+decision_mycompat_convert_to_actual = {
+	owned_planets_only = yes
+	allow = {
+		owner = { is_ai = no }
+		MYCOMPAT_st_is_enabled = yes
+	}
+	effect = {
+		planet_event = {
+			id = mycompat_events.6
+		}
+	}
+}

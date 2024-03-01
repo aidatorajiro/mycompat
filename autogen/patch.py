@@ -17,6 +17,39 @@ from config import *
 #
 #######
 
+def get_scripts_from_category_p(game_path, modid, cat):
+    paths = get_scripts(game_path, modid, "%s/*.txt" % cat)
+    result = []
+    for p in paths:
+        with open(p, 'rb') as f:
+            result.append([p, f.read()])
+    return result
+
+def get_segments_from_category_p(game_path, modid, cat, simple=False):
+    """
+    get all txt files under `game_path/modid/cat/*.txt` and parse them. (glob wildcard accepted)
+
+    Set `simple=True` to switch to simple mode.\n
+    complex mode is default.
+
+    simple mode ... each segments in top-level must be in format `segment_name = { ... }`, not `segment_name = segment_value`.\n
+        otherwise the latter one will be regarded as a comment!\n
+        useful in top-level file parsing.\n
+        keeps comments and other rubbish data except at end of a file.\n
+        thus, each segment ends with `}`\n
+        but the beginning of each segment may be whitespace, tab, newline or `#`.\n
+    
+    complex mode ... parse each item as a nested list structure. support statements like `a = b` in top-level\n
+        dispose all comments\n
+        each item will be parsed as a list which consists of a property name bytes, `b'='` or other equal-like statement such as `b'>='`, a property value bytes, or another list (which means another level of data within `{ ... }`)
+    """
+    if simple:
+        f = get_segments_simple
+    else:
+        f = get_segments_complex
+    return list(itertools.chain.from_iterable(map(lambda x: [x[0], f(x[1])], get_scripts_from_category_p(game_path, modid, cat))))
+
+
 def get_scripts_from_category(game_path, modid, cat):
     paths = get_scripts(game_path, modid, "%s/*.txt" % cat)
     result = []
@@ -260,6 +293,39 @@ def export_fields(target, tabs=0):
         return (data, after_eq, line)
     return functools.reduce(routine, target, (b'', 0, True))[0]
 
+def nestedSearch(nested, v):
+    """
+    check for any v(x) where x is an element of given nested list recursively
+    """
+    for element in nested:
+        if isinstance(element, list):
+            if nestedSearch(element, v):
+                return True
+        elif v(element):
+            return True
+    return False
+
+def nestedSearchList(nested, v):
+    """
+    check for any v(x) where x is a sub-list of given nested list
+    """
+    if v(nested):
+        return True
+    for element in nested:
+        if isinstance(element, list):
+            if nestedSearchList(element, v):
+                return True
+    return False
+
+
+def nestedApply(nested, v):
+    """
+    execute v(x) recursively in given nested list, where x is a sub-list of given nested list
+    """
+    v(nested)
+    for element in nested:
+        if isinstance(element, list):
+            nestedApply(element, v)
 
 #######
 #
@@ -267,17 +333,76 @@ def export_fields(target, tabs=0):
 #
 #######
 
+# buildings
 
-# aot
+def all_buildings():
+    var_def_table = {}
+    out = b""
 
-def aot():
-    ss = get_segments_from_category(stellaris_path, aot_modid, "common/buildings", simple=True)
-    
-    with open(patchpath("common/buildings/%saot_patch.txt" % file_prefix), "wb") as f:
-        for s in ss:
-            result = num_pops_patch(s)
-            if result:
-                f.write(result + b"\n")
+    for modid in ['v'] + os.listdir(stellaris_path):
+        if modid == 'v' or os.path.isdir(os.path.join(stellaris_path, modid)):
+            print('processing modid ', modid)
+
+            if modid in mod_excludes:
+                print(" .... skipping this mod")
+                continue
+
+            if modid == 'v':
+                all_segments = split3(get_segments_from_category(stellaris_game_path, '.', "common/buildings", simple=False), InlineOption.Substitute)
+            else:
+                all_segments = split3(get_segments_from_category(stellaris_path, modid, "common/buildings", simple=False), InlineOption.Substitute)
+            
+            building_defs = list(filter(lambda x: not x[0].startswith(b"@"), all_segments))
+            
+            def search(x):
+                if b"num_pops" in x:
+                    i = x.index(b"num_pops")
+                    return is_eq_like(x[i+1]) and re.match(rb"\d+", x[i+2])
+                else:
+                    return False
+            
+            def apply(x):
+                indices = [i for i, v in enumerate(x) if v == b"num_pops"]
+                for i in indices:
+                    # MYCOMPAT_st_totalpop = { MORE = %s }
+                    x[i] = b"MYCOMPAT_st_totalpop"
+                    n = x[i + 2]
+                    match x[i + 1]:
+                        case b'>=':
+                            r = [ b"MORE", b"=", str(int(n) - 1).encode()]
+                        case b'<=':
+                            r = [ b"LESS", b"=", str(int(n) + 1).encode()]
+                        case b'>':
+                            r = [ b"MORE", b"=", str(int(n)).encode()]
+                        case b'<':
+                            r = [ b"LESS", b"=", str(int(n)).encode()]
+                    x[i + 1] = b"="
+                    x[i + 2] = r
+            
+            building_overrides = []
+            
+            for building_def in building_defs:
+                if nestedSearchList(building_def, search):
+                    nestedApply(building_def, apply)
+                    building_overrides.append(building_def)
+            
+            if len(building_overrides):
+                var_defs = list(filter(lambda x: x[0].startswith(b"@"), all_segments))
+
+                for v in var_defs:
+                    if v[0] in var_def_table and var_def_table[v[0]] != v[2]:
+                        print("WARNING!!! variable already registered!!!!!! %s : prev value %s <-> conflicting value %s" % (v[0],  var_def_table[v[0]], v[2]))
+                    var_def_table[v[0]] = v[2]
+                
+                for ov in building_overrides:
+                    out += export_fields(ov)
+
+    for x, y in var_def_table.items():
+        out = export_fields([x, b'=', y]) + out
+                
+    with open(patchpath("common/buildings/%sbuildings_patch.txt" % file_prefix), "wb") as f:
+        f.write(out)
+
 
 def all_jobs():
     """
@@ -314,7 +439,7 @@ def all_jobs():
 
             var_defs = list(filter(lambda x: x[0].startswith(b"@"), all_segments))
             for v in var_defs:
-                if v[0] in var_def_table:
+                if v[0] in var_def_table and var_def_table[v[0]] != v[2]:
                     print("WARNING!!! variable already registered!!!!!! %s : prev value %s <-> conflicting value %s" % (v[0],  var_def_table[v[0]], v[2]))
                 var_def_table[v[0]] = v[2]
 
@@ -542,7 +667,5 @@ def all_jobs():
         f.write(sv_output)
 
 if __name__ == "__main__":
-    
-    aot()
-    # mr()
+    all_buildings()
     all_jobs()
