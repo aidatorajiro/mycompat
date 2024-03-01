@@ -502,7 +502,6 @@ def all_jobs():
                 # log property name
                 job_props.add(prop_name)
             
-                # TODO: implement overlord_resources (maybe not that hard)
                 match prop_name:
                     case b'overlord_resources' | b'resources':
                         for x in split3(prop_value, InlineOption.DoNothing):
