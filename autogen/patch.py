@@ -376,6 +376,8 @@ def all_buildings():
                             r = [ b"MORE", b"=", str(int(n)).encode()]
                         case b'<':
                             r = [ b"LESS", b"=", str(int(n)).encode()]
+                        case _:
+                            raise NotImplementedError("ERROR: unsupported num_pops")
                     x[i + 1] = b"="
                     x[i + 2] = r
             
@@ -403,6 +405,13 @@ def all_buildings():
     with open(patchpath("common/buildings/%sbuildings_patch.txt" % file_prefix), "wb") as f:
         f.write(out)
 
+# jobs
+
+def calculate_mod_index_from_mod_order(m):
+    if m == 'v':
+        return (-99999, m)
+    else:
+        return (mod_order.index(m), m)
 
 def all_jobs():
     """
@@ -480,16 +489,12 @@ def all_jobs():
 
             job_modids = job_to_modid[jn]
             if len(job_modids) > 1:
-                def calculate_mod_index_from_mod_order(m):
-                    if m == 'v':
-                        return (-99999, m)
-                    else:
-                        return (mod_order.index(m), m)
                 _, max_modid = max([calculate_mod_index_from_mod_order(m) for m in job_modids], key=lambda x: x[0])
                 if modid == max_modid:
                     print("job overwrite detected: using this mod")
                 else:
                     print("job overwrite detected: skip this mod")
+                    continue
 
             # if capped by modifier, change condition to disable it
             # TODO: implement another logic to make use of it (for example, calculate from workshop residue value)
