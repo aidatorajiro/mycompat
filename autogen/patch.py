@@ -333,6 +333,7 @@ def all_buildings():
                 all_segments = split3(get_segments_from_category(stellaris_path, modid, "common/buildings", simple=False), InlineOption.Substitute)
             
             building_defs = list(filter(lambda x: not x[0].startswith(b"@"), all_segments))
+            var_defs = list(filter(lambda x: x[0].startswith(b"@"), all_segments))
             
             def search(x):
                 if b"num_pops" in x:
@@ -351,6 +352,8 @@ def all_buildings():
                     # MYCOMPAT_st_totalpop = { MORE = %s }
                     x[i] = b"MYCOMPAT_st_totalpop"
                     n = x[i + 2]
+                    if n.startswith(b"@"):
+                        n = [z[2] for z in var_defs if z[0] == n][0]
                     match x[i + 1]:
                         case b'>=':
                             r = [ b"MORE", b"=", str(int(n) - 1).encode()]
@@ -373,8 +376,6 @@ def all_buildings():
                     building_overrides.append(building_def)
             
             if len(building_overrides):
-                var_defs = list(filter(lambda x: x[0].startswith(b"@"), all_segments))
-
                 for v in var_defs:
                     if v[0] in var_def_table and var_def_table[v[0]] != v[2]:
                         print("WARNING!!! variable already registered!!!!!! %s : prev value %s <-> conflicting value %s" % (v[0],  var_def_table[v[0]], v[2]))

@@ -7,8 +7,7 @@ MYCOMPAT_sv_job_quantity = {
 	}
 
 	modifier = {
-		mult = MYCOMPAT_v_converted_pops
-		is_variable_set = MYCOMPAT_v_converted_pops
+		mult = value:MYCOMPAT_sv_totalpop
 	}
 
 	modifier = {

@@ -4,7 +4,7 @@ planet_event = {
 	id = mycompat_events.1
 	hide_window = yes
 	is_triggered_only = no
-	mean_time_to_happen = { days = 30 }
+	mean_time_to_happen = { days = 90 }
 	pre_triggers = {
 		has_owner = yes
 	}
@@ -16,14 +16,50 @@ planet_event = {
 			limit = { not = { is_variable_set = MYCOMPAT_v_converted_pops } }
 			set_variable = { which = MYCOMPAT_v_converted_pops value = 0 }
 		}
-		every_owned_pop = {
-			limit = { is_unemployed = yes }
-			prev = {
-				change_variable = { which = MYCOMPAT_v_converted_pops value = 1 }
+		if = {
+			limit = {
+				count_owned_pop = {
+					limit = { is_unemployed = yes }
+					count > 2
+				}
 			}
-			kill_pop = yes
+			check_planet_employment = yes
+			if  = {
+				limit = {
+					count_owned_pop = {
+						limit = { is_unemployed = yes }
+						count > 2
+					}
+				}
+				every_owned_pop = {
+					limit = { is_unemployed = yes }
+					prev = {
+						change_variable = { which = MYCOMPAT_v_converted_pops value = 1 }
+					}
+					kill_pop = yes
+				}
+			}
 		}
-		
+	}
+}
+
+
+planet_event = {
+	id = mycompat_events.7
+	hide_window = yes
+	is_triggered_only = no
+	mean_time_to_happen = { days = 90 }
+	pre_triggers = {
+		has_owner = yes
+	}
+	trigger = {
+		MYCOMPAT_st_is_enabled = yes
+	}
+	immediate = {
+		if = {
+			limit = { not = { is_variable_set = MYCOMPAT_v_converted_pops } }
+			set_variable = { which = MYCOMPAT_v_converted_pops value = 0 }
+		}
 		MYCOMPAT_agse_planet = yes
 	}
 }
