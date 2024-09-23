@@ -46,7 +46,7 @@ mod_excludes += [
     "2529002857",  # production revolution SHOULD BE DISABLED
     "2830366252",  # production revolution patch SHOULD BE DISABLED
     "2466607238",  # Kasako framework SHOULD BE DISABLED
-]  # TODO: load irony/stellaris launcher database to obtain excludes
+]
 
 # +++++++++++++++++ #
 # PLEASE EDIT BELOW #
